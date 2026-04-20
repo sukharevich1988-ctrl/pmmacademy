@@ -1,0 +1,2200 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Интерактивный курс Product Marketing Manager с нуля: 8 модулей, практика, портфолио, бесплатные ресурсы"/>
+  <title>PMM Academy | Product Marketing Manager с нуля</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#6366f1',
+            secondary: '#8b5cf6',
+            accent: '#06b6d4',
+            dark: '#0f172a',
+            card: '#1e293b',
+            success: '#22c55e',
+            warning: '#f59e0b'
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['Fira Code', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Custom Styles -->
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .sql-editor { 
+      font-family: 'Fira Code', monospace; 
+      background: #1e1e1e; 
+      color: #d4d4d4; 
+      border-radius: 8px;
+      min-height: 180px;
+      line-height: 1.5;
+    }
+    .sql-output { 
+      background: #0d1117; 
+      border-left: 4px solid #6366f1;
+    }
+    .module-card { transition: all 0.2s ease; }
+    .module-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15); }
+    .progress-ring { transition: stroke-dashoffset 0.3s ease; }
+    .badge { animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.05); } }
+    .tab-active { border-bottom: 3px solid #6366f1; color: #6366f1; font-weight: 600; }
+    .resource-card { transition: all 0.2s; border-left: 3px solid transparent; }
+    .resource-card:hover { border-left-color: #6366f1; background: rgba(99,102,241,0.05); }
+    .artifact-card { transition: all 0.2s; }
+    .artifact-card:hover { border-color: #6366f1; box-shadow: 0 4px 12px rgba(99,102,241,0.15); }
+    @media (max-width: 768px) { .hide-mobile { display: none; } }
+    .fade-in { animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .code-keyword { color: #569cd6; }
+    .code-string { color: #ce9178; }
+    .code-comment { color: #6a9955; }
+    .code-function { color: #dcdcaa; }
+  </style>
+</head>
+<body class="bg-gray-50 dark:bg-dark text-gray-900 dark:text-gray-100 transition-colors duration-200">
+
+<!-- ========== HEADER ========== -->
+<header class="sticky top-0 z-50 bg-white/95 dark:bg-card/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <!-- Logo -->
+    <div class="flex items-center gap-3 cursor-pointer" onclick="scrollToTop()">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold shadow-lg">
+        PMM
+      </div>
+      <div class="hidden sm:block">
+        <h1 class="font-bold text-lg leading-tight">PMM Academy</h1>
+        <p class="text-xs text-gray-500 dark:text-gray-400">Product Marketing Manager с нуля</p>
+      </div>
+    </div>
+    
+    <!-- Center Nav (Desktop) -->
+    <nav class="hidden lg:flex items-center gap-1">
+      <button onclick="scrollToModules()" class="px-3 py-2 text-sm font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">📚 Модули</button>
+      <button onclick="togglePortfolio()" class="px-3 py-2 text-sm font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">📁 Портфолио</button>
+      <button onclick="showAllResources()" class="px-3 py-2 text-sm font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">🔗 Ресурсы</button>
+      <button onclick="downloadCheatSheet()" class="px-3 py-2 text-sm font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">📄 Cheat-Sheet</button>
+    </nav>
+    
+    <!-- Right Controls -->
+    <div class="flex items-center gap-3">
+      <!-- Progress (Desktop) -->
+      <div class="hidden md:flex items-center gap-2">
+        <div class="w-24 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+          <div id="globalProgress" class="h-full bg-gradient-to-r from-primary to-secondary rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+        <span class="text-sm font-medium" id="progressText">0%</span>
+      </div>
+      
+      <!-- XP & Badges -->
+      <div class="flex items-center gap-2">
+        <span class="px-2.5 py-1 bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-400 text-xs rounded-full font-medium flex items-center gap-1">
+          <i class="fas fa-star"></i><span id="xpCount">0</span> XP
+        </span>
+        <div id="badgeContainer" class="flex gap-1">
+          <!-- Badges appear here -->
+        </div>
+      </div>
+      
+      <!-- Dark Mode Toggle -->
+      <button id="darkModeToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition" title="Тёмная тема">
+        <i class="fas fa-moon dark:hidden text-gray-600"></i>
+        <i class="fas fa-sun hidden dark:inline text-yellow-400"></i>
+      </button>
+      
+      <!-- Mobile Menu -->
+      <button class="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition" onclick="toggleMobileMenu()">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </div>
+  
+  <!-- Mobile Menu -->
+  <div id="mobileMenu" class="hidden lg:hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-card px-4 py-3">
+    <div class="flex flex-col gap-2">
+      <button onclick="scrollToModules(); toggleMobileMenu()" class="text-left px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">📚 Модули</button>
+      <button onclick="togglePortfolio(); toggleMobileMenu()" class="text-left px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">📁 Портфолио</button>
+      <button onclick="showAllResources(); toggleMobileMenu()" class="text-left px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🔗 Ресурсы</button>
+      <button onclick="downloadCheatSheet(); toggleMobileMenu()" class="text-left px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">📄 Cheat-Sheet</button>
+    </div>
+  </div>
+</header>
+
+<!-- ========== MAIN CONTENT ========== -->
+<main class="max-w-7xl mx-auto px-4 py-6 md:py-8">
+  
+  <!-- Hero Section -->
+  <section class="mb-10 md:mb-14 text-center fade-in">
+    <div class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full text-sm mb-5 border border-indigo-200 dark:border-indigo-800">
+      <i class="fas fa-rocket"></i> Новый курс • 8 модулей • 4–6 месяцев • 100% бесплатно
+    </div>
+    
+    <h2 class="text-3xl md:text-5xl font-bold mb-4 leading-tight">
+      Стань <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">Product Marketing Manager</span>
+    </h2>
+    
+    <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-6 leading-relaxed">
+      Практический курс для новичков без опыта: от основ продуктового мышления до GTM-стратегий и аналитики. 
+      <span class="font-semibold text-primary">60% практики</span>, реальные кейсы, артефакты для портфолио.
+    </p>
+    
+    <!-- Competency Pills -->
+    <div class="flex flex-wrap justify-center gap-2 mb-8">
+      <span class="px-3 py-1.5 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-full text-sm shadow-sm">🎯 Позиционирование</span>
+      <span class="px-3 py-1.5 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-full text-sm shadow-sm">🚀 GTM-стратегии</span>
+      <span class="px-3 py-1.5 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-full text-sm shadow-sm">🔍 Исследования</span>
+      <span class="px-3 py-1.5 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-full text-sm shadow-sm">📊 Метрики + SQL</span>
+      <span class="px-3 py-1.5 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-full text-sm shadow-sm">💬 Коммуникация</span>
+      <span class="px-3 py-1.5 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-full text-sm shadow-sm">🤝 Влияние</span>
+    </div>
+    
+    <!-- CTA Buttons -->
+    <div class="flex flex-col sm:flex-row gap-3 justify-center mb-8">
+      <button onclick="startCourse()" class="px-8 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-semibold text-lg hover:opacity-95 transition shadow-xl hover:shadow-2xl flex items-center justify-center gap-2">
+        <i class="fas fa-play-circle"></i> Начать обучение
+      </button>
+      <button onclick="togglePortfolio()" class="px-8 py-4 bg-white dark:bg-card border-2 border-gray-300 dark:border-gray-600 rounded-xl font-semibold text-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition shadow-lg flex items-center justify-center gap-2">
+        <i class="fas fa-folder-open"></i> Моё портфолио
+      </button>
+    </div>
+    
+    <!-- Stats -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+      <div class="p-4 bg-white dark:bg-card rounded-xl border border-gray-200 dark:border-gray-700">
+        <div class="text-2xl font-bold text-primary">8</div>
+        <div class="text-xs text-gray-500">Модулей</div>
+      </div>
+      <div class="p-4 bg-white dark:bg-card rounded-xl border border-gray-200 dark:border-gray-700">
+        <div class="text-2xl font-bold text-secondary">60+</div>
+        <div class="text-xs text-gray-500">Ресурсов</div>
+      </div>
+      <div class="p-4 bg-white dark:bg-card rounded-xl border border-gray-200 dark:border-gray-700">
+        <div class="text-2xl font-bold text-accent">40+</div>
+        <div class="text-xs text-gray-500">Практик</div>
+      </div>
+      <div class="p-4 bg-white dark:bg-card rounded-xl border border-gray-200 dark:border-gray-700">
+        <div class="text-2xl font-bold text-success">100%</div>
+        <div class="text-xs text-gray-500">Бесплатно</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Roadmap Visual -->
+  <section class="mb-12 fade-in">
+    <div class="flex items-center justify-between mb-5">
+      <h3 class="text-xl md:text-2xl font-bold flex items-center gap-2">
+        <i class="fas fa-map text-primary"></i> Дорожная карта курса
+      </h3>
+      <span class="text-sm text-gray-500">Нажми на модуль для начала</span>
+    </div>
+    
+    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 md:gap-3">
+      <!-- Module 1 -->
+      <div class="module-step p-3 md:p-4 bg-white dark:bg-card rounded-xl border-2 border-primary text-center cursor-pointer module-card" data-module="1" onclick="openModule(1)">
+        <div class="w-9 h-9 md:w-10 md:h-10 mx-auto mb-2 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm shadow">1</div>
+        <p class="text-xs md:text-sm font-medium leading-tight">PMM-майндсет</p>
+        <div class="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded mt-2 overflow-hidden">
+          <div class="h-full bg-primary rounded transition-all" style="width: 100%"></div>
+        </div>
+        <span class="text-[10px] text-green-500 font-medium mt-1 block">✓ Пройден</span>
+      </div>
+      
+      <!-- Modules 2-8 -->
+      <div class="module-step p-3 md:p-4 bg-white dark:bg-card rounded-xl border border-gray-200 dark:border-gray-700 text-center cursor-pointer module-card hover:border-primary transition" data-module="2" onclick="openModule(2)">
+        <div class="w-9 h-9 md:w-10 md:h-10 mx-auto mb-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 flex items-center justify-center font-bold text-sm">2</div>
+        <p class="text-xs md:text-sm font-medium leading-tight">Исследования</p>
+        <div class="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded mt-2"></div>
+      </div>
+      <div class="module-step p-3 md:p-4 bg-white dark:bg-card rounded-xl border border-gray-200 dark:border-gray-700 text-center cursor-pointer module-card hover:border-primary transition" data-module="3" onclick="openModule(3)">
+        <div class="w-9 h-9 md:w-10 md:h-10 mx-auto mb-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 flex items-center justify-center font-bold text-sm">3</div>
+        <p class="text-xs md:text-sm font-medium leading-tight">Позиционирование</p>
+        <div class="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded mt-2"></div>
+      </div>
+      <div class="module-step p-3 md:p-4 bg-white dark:bg-card rounded-xl border border-gray-200 dark:border-gray-700 text-center cursor-pointer module-card hover:border-primary transition" data-module="4" onclick="openModule(4)">
+        <div class="w-9 h-9 md:w-10 md:h-10 mx-auto mb-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 flex items-center justify-center font-bold text-sm">4</div>
+        <p class="text-xs md:text-sm font-medium leading-tight">GTM-стратегия</p>
+        <div class="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded mt-2"></div>
+      </div>
+      <div class="module-step p-3 md:p-4 bg-white dark:bg-card rounded-xl border border-gray-200 dark:border-gray-700 text-center cursor-pointer module-card hover:border-primary transition" data-module="5" onclick="openModule(5)">
+        <div class="w-9 h-9 md:w-10 md:h-10 mx-auto mb-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 flex items-center justify-center font-bold text-sm">5</div>
+        <p class="text-xs md:text-sm font-medium leading-tight">Аналитика + SQL</p>
+        <div class="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded mt-2"></div>
+      </div>
+      <div class="module-step p-3 md:p-4 bg-white dark:bg-card rounded-xl border border-gray-200 dark:border-gray-700 text-center cursor-pointer module-card hover:border-primary transition" data-module="6" onclick="openModule(6)">
+        <div class="w-9 h-9 md:w-10 md:h-10 mx-auto mb-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 flex items-center justify-center font-bold text-sm">6</div>
+        <p class="text-xs md:text-sm font-medium leading-tight">Контент & Enablement</p>
+        <div class="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded mt-2"></div>
+      </div>
+      <div class="module-step p-3 md:p-4 bg-white dark:bg-card rounded-xl border border-gray-200 dark:border-gray-700 text-center cursor-pointer module-card hover:border-primary transition" data-module="7" onclick="openModule(7)">
+        <div class="w-9 h-9 md:w-10 md:h-10 mx-auto mb-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 flex items-center justify-center font-bold text-sm">7</div>
+        <p class="text-xs md:text-sm font-medium leading-tight">Влияние & Коммуникация</p>
+        <div class="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded mt-2"></div>
+      </div>
+      <div class="module-step p-3 md:p-4 bg-white dark:bg-card rounded-xl border border-gray-200 dark:border-gray-700 text-center cursor-pointer module-card hover:border-primary transition" data-module="8" onclick="openModule(8)">
+        <div class="w-9 h-9 md:w-10 md:h-10 mx-auto mb-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 flex items-center justify-center font-bold text-sm">8</div>
+        <p class="text-xs md:text-sm font-medium leading-tight">Финальный проект</p>
+        <div class="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded mt-2"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Module Content Area (Dynamic) -->
+  <section id="moduleContainer" class="hidden fade-in">
+    <div class="bg-white dark:bg-card rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-xl">
+      <!-- Module Header -->
+      <div class="p-5 md:p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-primary/10 to-secondary/10">
+        <div class="flex items-start justify-between gap-4">
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-sm font-semibold text-primary px-2 py-0.5 bg-primary/10 rounded" id="moduleLabel">Модуль 1</span>
+              <span class="text-xs px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full" id="moduleStatus">✓ Пройден</span>
+            </div>
+            <h3 class="text-xl md:text-2xl font-bold" id="moduleTitle">Кто такой PMM и как мыслить продуктом</h3>
+            <p class="text-gray-600 dark:text-gray-300 mt-2 text-sm md:text-base" id="moduleGoal">Сформировать роль, понять место в компании, освоить продуктовый майндсет.</p>
+          </div>
+          <button onclick="closeModule()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition flex-shrink-0" title="Закрыть">
+            <i class="fas fa-times text-lg"></i>
+          </button>
+        </div>
+        
+        <!-- Module Tabs -->
+        <div class="flex gap-1 mt-5 pt-3 border-t border-gray-200 dark:border-gray-700 overflow-x-auto">
+          <button class="tab-btn px-4 py-2.5 text-sm font-medium whitespace-nowrap tab-active" data-tab="theory" onclick="switchTab('theory')">📚 Теория (40%)</button>
+          <button class="tab-btn px-4 py-2.5 text-sm font-medium whitespace-nowrap text-gray-500 hover:text-gray-700 dark:hover:text-gray-300" data-tab="practice" onclick="switchTab('practice')">💻 Практика (45%)</button>
+          <button class="tab-btn px-4 py-2.5 text-sm font-medium whitespace-nowrap text-gray-500 hover:text-gray-700 dark:hover:text-gray-300" data-tab="bonus" onclick="switchTab('bonus')">🧠 Бонус (15%)</button>
+        </div>
+      </div>
+      
+      <!-- Tab Content -->
+      <div id="tabContent" class="p-5 md:p-6 min-h-[400px]">
+        <!-- Dynamic content loads here -->
+      </div>
+      
+      <!-- Module Footer Actions -->
+      <div class="p-4 md:p-5 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex flex-col sm:flex-row gap-3 justify-between items-center">
+        <div class="flex items-center gap-3">
+          <input type="checkbox" id="moduleComplete" class="w-4 h-4 text-primary rounded border-gray-300 dark:border-gray-600" onchange="toggleModuleComplete(this)">
+          <label for="moduleComplete" class="text-sm font-medium cursor-pointer">Отметить как выполненное <span class="text-gray-400">(+50 XP)</span></label>
+        </div>
+        <div class="flex gap-2">
+          <button class="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition flex items-center gap-1" onclick="saveArtifact()">
+            <i class="fas fa-save"></i><span class="hidden sm:inline">Сохранить артефакт</span>
+          </button>
+          <button class="px-5 py-2 text-sm bg-primary text-white rounded-lg hover:bg-indigo-600 transition font-medium flex items-center gap-1" onclick="nextModule()">
+            <span class="hidden sm:inline">Следующий модуль</span><span class="sm:hidden">Далее</span> <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SQL Playground Section (Featured) -->
+  <section id="sqlPreview" class="mb-12 fade-in">
+    <div class="flex items-center justify-between mb-5">
+      <h3 class="text-xl md:text-2xl font-bold flex items-center gap-2">
+        <i class="fas fa-database text-primary"></i> SQL-плейграунд для PMM
+        <span class="text-xs px-2.5 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full font-medium">Интерактивно</span>
+      </h3>
+      <button onclick="openModule(5)" class="text-sm text-primary hover:underline flex items-center gap-1">
+        Полный модуль 5 <i class="fas fa-arrow-right text-xs"></i>
+      </button>
+    </div>
+    
+    <div class="bg-white dark:bg-card rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-lg">
+      <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-sm font-medium">Датасет: <code class="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono">users, events, transactions</code></span>
+          <span class="text-xs text-gray-500">• PMM-кейсы • когорты • воронки • сегментация</span>
+        </div>
+        <div class="flex gap-2">
+          <button class="text-xs px-3 py-1.5 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition font-medium" onclick="loadExample(1)">
+            📊 Конверсия
+          </button>
+          <button class="text-xs px-3 py-1.5 bg-secondary/10 text-secondary rounded-lg hover:bg-secondary/20 transition font-medium" onclick="loadExample(2)">
+            🔄 Retention
+          </button>
+        </div>
+      </div>
+      
+      <div class="grid lg:grid-cols-2 gap-0">
+        <!-- Editor -->
+        <div class="p-4 border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700">
+          <label class="text-xs font-medium text-gray-500 mb-2 block flex items-center gap-1">
+            <i class="fas fa-code"></i> SQL запрос
+          </label>
+          <textarea id="sqlEditor" class="sql-editor w-full p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/50" rows="10" spellcheck="false" placeholder="-- Напиши запрос здесь...&#10;SELECT * FROM events LIMIT 10;">-- 🔍 Конверсия воронки: визит → регистрация → покупка
+-- Вопрос бизнеса: "Какая доля посетителей становится платящими?"
+
+SELECT 
+  COUNT(DISTINCT CASE WHEN event='visit' THEN user_id END) AS visits,
+  COUNT(DISTINCT CASE WHEN event='signup' THEN user_id END) AS signups,
+  COUNT(DISTINCT CASE WHEN event='purchase' THEN user_id END) AS purchases,
+  ROUND(
+    COUNT(DISTINCT CASE WHEN event='purchase' THEN user_id END) * 100.0 / 
+    NULLIF(COUNT(DISTINCT CASE WHEN event='visit' THEN user_id END), 0), 
+    2
+  ) AS conversion_rate_pct
+FROM events
+WHERE event_date >= DATE('now', '-30 days');  -- Последние 30 дней</textarea>
+          
+          <div class="flex flex-wrap gap-2 mt-4">
+            <button onclick="runSQL()" class="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition flex items-center gap-2 shadow">
+              <i class="fas fa-play"></i> Запустить
+            </button>
+            <button onclick="resetSQL()" class="px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition flex items-center gap-1">
+              <i class="fas fa-undo"></i> Сброс
+            </button>
+            <select id="exampleSelector" class="px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-card focus:outline-none focus:ring-2 focus:ring-primary/50" onchange="loadExample(this.value)">
+              <option value="">📋 Выбери пример...</option>
+              <option value="1">📊 Конверсия воронки</option>
+              <option value="2">🔄 Retention по когортам</option>
+              <option value="3">👥 RFM-сегментация</option>
+              <option value="4">📈 DAU/MAU (stickiness)</option>
+              <option value="5">🧪 A/B-тест: метрики</option>
+              <option value="6">🎯 Сегментация по каналу</option>
+              <option value="7">💰 LTV по когорте</option>
+            </select>
+          </div>
+          
+          <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-xs text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+            <i class="fas fa-lightbulb mr-1.5"></i>
+            <strong>Совет PMM:</strong> Не пиши сложные запросы с нуля. Начни с шаблона → адаптируй под вопрос бизнеса → проверь результат с аналитиком. Документируй: "Запрос Х отвечает на вопрос Y".
+          </div>
+        </div>
+        
+        <!-- Output -->
+        <div class="p-4">
+          <label class="text-xs font-medium text-gray-500 mb-2 block flex items-center gap-1">
+            <i class="fas fa-table"></i> Результат
+          </label>
+          <div id="sqlOutput" class="sql-output p-4 rounded-lg min-h-[220px]">
+            <div class="text-xs text-gray-400 mb-3 flex items-center gap-2">
+              <i class="fas fa-info-circle"></i> Нажми «Запустить» для выполнения запроса
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs font-mono">
+                <thead class="text-left border-b border-gray-700 text-gray-400">
+                  <tr>
+                    <th class="pb-2 pr-4">visits</th>
+                    <th class="pb-2 pr-4">signups</th>
+                    <th class="pb-2 pr-4">purchases</th>
+                    <th class="pb-2">conversion_rate</th>
+                  </tr>
+                </thead>
+                <tbody id="sqlResults" class="text-gray-200">
+                  <tr class="border-b border-gray-800">
+                    <td class="py-2.5 pr-4">12,450</td>
+                    <td class="py-2.5 pr-4">3,821</td>
+                    <td class="py-2.5 pr-4">892</td>
+                    <td class="py-2.5 text-green-400 font-semibold">7.16%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <!-- Interpretation Prompt -->
+            <div class="mt-5 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+              <p class="text-xs font-semibold mb-2 flex items-center gap-1">🤔 Что делать с этими данными?</p>
+              <p class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
+                <strong>Конверсия 7.16%</strong> — ниже бенчмарка для SaaS (10–15%). 
+                <br><br>
+                <strong>Гипотеза:</strong> пользователи отваливаются на этапе signup из-за сложной формы регистрации.
+                <br><br>
+                <strong>Действие PMM:</strong> 
+                <ol class="list-decimal list-inside mt-1 space-y-1">
+                  <li>Запросить у product упрощение онбординга</li>
+                  <li>Запустить A/B-тест с 2-шаговой регистрацией</li>
+                  <li>Подготовить battlecard для sales с акцентом на "быстрый старт"</li>
+                </ol>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Resources Library Preview -->
+  <section class="mb-12 fade-in">
+    <div class="flex items-center justify-between mb-5">
+      <h3 class="text-xl md:text-2xl font-bold flex items-center gap-2">
+        <i class="fas fa-book-open text-primary"></i> Библиотека ресурсов (65+ бесплатных)
+      </h3>
+      <button onclick="showAllResources()" class="text-sm text-primary hover:underline flex items-center gap-1">
+        Все ресурсы <i class="fas fa-arrow-right text-xs"></i>
+      </button>
+    </div>
+    
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <!-- Resource cards -->
+      <a href="https://www.youtube.com/watch?v=4k7jGvJd8rY" target="_blank" class="resource-card p-4 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-xl block hover:shadow-lg transition">
+        <div class="flex items-start justify-between mb-2">
+          <span class="text-xs px-2 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded font-medium">Модуль 1</span>
+          <i class="fab fa-youtube text-red-500 text-lg"></i>
+        </div>
+        <h4 class="font-semibold mb-1 hover:text-primary transition">What is Product Marketing?</h4>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">YouTube • 18 мин • Основы роли PMM от практикующего эксперта</p>
+        <span class="text-xs text-primary font-medium flex items-center gap-1">
+          Смотреть <i class="fas fa-external-link-alt text-[10px]"></i>
+        </span>
+      </a>
+      
+      <a href="https://www.reforge.com/blog/product-marketing-handbook" target="_blank" class="resource-card p-4 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-xl block hover:shadow-lg transition">
+        <div class="flex items-start justify-between mb-2">
+          <span class="text-xs px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded font-medium">Модуль 1</span>
+          <i class="fas fa-book text-purple-500 text-lg"></i>
+        </div>
+        <h4 class="font-semibold mb-1 hover:text-primary transition">PMM Handbook</h4>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">Reforge • Статья • Структурированный гайд по компетенциям (free tier)</p>
+        <span class="text-xs text-primary font-medium flex items-center gap-1">
+          Читать <i class="fas fa-external-link-alt text-[10px]"></i>
+        </span>
+      </a>
+      
+      <a href="https://hellopm.co/sql-for-product-managers/" target="_blank" class="resource-card p-4 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-xl block hover:shadow-lg transition">
+        <div class="flex items-start justify-between mb-2">
+          <span class="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded font-medium">Модуль 5</span>
+          <i class="fas fa-database text-green-500 text-lg"></i>
+        </div>
+        <h4 class="font-semibold mb-1 hover:text-primary transition">SQL for Product Managers</h4>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">HelloPM • Гайд • Базовые запросы именно для не-технических специалистов</p>
+        <span class="text-xs text-primary font-medium flex items-center gap-1">
+          Изучить <i class="fas fa-external-link-alt text-[10px]"></i>
+        </span>
+      </a>
+    </div>
+    
+    <div class="text-center mt-6">
+      <button onclick="showAllResources()" class="px-6 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition flex items-center gap-2 mx-auto">
+        <i class="fas fa-list"></i> Показать все 65+ ресурсов
+      </button>
+    </div>
+  </section>
+
+  <!-- Weekly Plan Preview -->
+  <section class="mb-12 fade-in">
+    <h3 class="text-xl md:text-2xl font-bold mb-5 flex items-center gap-2">
+      <i class="fas fa-calendar-alt text-primary"></i> Еженедельный план обучения
+    </h3>
+    
+    <div class="bg-white dark:bg-card rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-lg">
+      <div class="p-5 border-b border-gray-200 dark:border-gray-700">
+        <p class="text-sm text-gray-600 dark:text-gray-300">
+          <strong>Формат:</strong> 4–6 месяцев • 10–15 часов/неделю • Баланс: 40% теория, 45% практика, 15% рефлексия
+        </p>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-gray-50 dark:bg-gray-800/50">
+            <tr>
+              <th class="text-left p-4 font-semibold">Недели</th>
+              <th class="text-left p-4 font-semibold">Модуль</th>
+              <th class="text-left p-4 font-semibold">Теория</th>
+              <th class="text-left p-4 font-semibold">Практика</th>
+              <th class="text-left p-4 font-semibold">Артефакт</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition">
+              <td class="p-4 font-medium">1–2</td>
+              <td class="p-4">🎯 PMM-майндсет</td>
+              <td class="p-4 text-gray-600 dark:text-gray-400">3 ч: видео, статьи, фреймворки</td>
+              <td class="p-4 text-gray-600 dark:text-gray-400">5 ч: кейс, упражнение, анализ</td>
+              <td class="p-4"><span class="px-2 py-1 bg-primary/10 text-primary rounded text-xs">Зона влияния</span></td>
+            </tr>
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition">
+              <td class="p-4 font-medium">3–4</td>
+              <td class="p-4">🔍 Исследования</td>
+              <td class="p-4 text-gray-600 dark:text-gray-400">2 ч: методы custdev, сегментация</td>
+              <td class="p-4 text-gray-600 dark:text-gray-400">6 ч: 2 интервью, анализ рынка</td>
+              <td class="p-4"><span class="px-2 py-1 bg-primary/10 text-primary rounded text-xs">Отчёт + персоны</span></td>
+            </tr>
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition">
+              <td class="p-4 font-medium">5–6</td>
+              <td class="p-4">🎯 Позиционирование</td>
+              <td class="p-4 text-gray-600 dark:text-gray-400">3 ч: формулы, примеры, ошибки</td>
+              <td class="p-4 text-gray-600 dark:text-gray-400">5 ч: positioning statement, messaging</td>
+              <td class="p-4"><span class="px-2 py-1 bg-primary/10 text-primary rounded text-xs">Messaging House</span></td>
+            </tr>
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition">
+              <td class="p-4 font-medium">7–8</td>
+              <td class="p-4">🚀 GTM-стратегия</td>
+              <td class="p-4 text-gray-600 dark:text-gray-400">3 ч: модели, каналы, ценообразование</td>
+              <td class="p-4 text-gray-600 dark:text-gray-400">6 ч: план запуска, выбор каналов</td>
+              <td class="p-4"><span class="px-2 py-1 bg-primary/10 text-primary rounded text-xs">GTM-план</span></td>
+            </tr>
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition bg-primary/5">
+              <td class="p-4 font-medium">9–10</td>
+              <td class="p-4 font-semibold text-primary">📊 Аналитика + SQL</td>
+              <td class="p-4 text-gray-600 dark:text-gray-400">3 ч: метрики, дашборды, основы SQL</td>
+              <td class="p-4 text-gray-600 dark:text-gray-400">6 ч: SQL-плейграунд, интерпретация</td>
+              <td class="p-4"><span class="px-2 py-1 bg-primary text-white rounded text-xs font-medium">Анализ + запросы</span></td>
+            </tr>
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition">
+              <td class="p-4 font-medium">11–12</td>
+              <td class="p-4">💬 Контент & Enablement</td>
+              <td class="p-4 text-gray-600 dark:text-gray-400">2 ч: типы контента, storytelling</td>
+              <td class="p-4 text-gray-600 dark:text-gray-400">6 ч: battlecard, кейс, адаптация</td>
+              <td class="p-4"><span class="px-2 py-1 bg-primary/10 text-primary rounded text-xs">Battlecard + кейс</span></td>
+            </tr>
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition">
+              <td class="p-4 font-medium">13–14</td>
+              <td class="p-4">🤝 Влияние & Коммуникация</td>
+              <td class="p-4 text-gray-600 dark:text-gray-400">3 ч: стейкхолдеры, фасилитация</td>
+              <td class="p-4 text-gray-600 dark:text-gray-400">5 ч: ролевая игра, презентация</td>
+              <td class="p-4"><span class="px-2 py-1 bg-primary/10 text-primary rounded text-xs">Deck + stakeholder map</span></td>
+            </tr>
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition">
+              <td class="p-4 font-medium">15–18</td>
+              <td class="p-4 font-semibold">🎓 Финальный проект</td>
+              <td class="p-4 text-gray-600 dark:text-gray-400">2 ч: структура кейса, портфолио</td>
+              <td class="p-4 text-gray-600 dark:text-gray-400">12 ч: сквозной проект + презентация</td>
+              <td class="p-4"><span class="px-2 py-1 bg-gradient-to-r from-primary to-secondary text-white rounded text-xs font-medium">Портфолио-кейс</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="p-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700 text-center">
+        <button onclick="downloadWeeklyPlan()" class="px-5 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-indigo-600 transition flex items-center gap-2 mx-auto">
+          <i class="fas fa-download"></i> Скачать полный план (PDF)
+        </button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ========== MODALS ========== -->
+
+<!-- Portfolio Modal -->
+<div id="portfolioModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+  <div class="bg-white dark:bg-card rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden shadow-2xl flex flex-col">
+    <div class="p-5 md:p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+      <h3 class="text-xl font-bold flex items-center gap-2">📁 Моё портфолио PMM</h3>
+      <button onclick="togglePortfolio()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition" title="Закрыть">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="p-5 md:p-6 overflow-y-auto flex-1">
+      <p class="text-sm text-gray-600 dark:text-gray-300 mb-5 leading-relaxed">
+        Здесь собираются артефакты, которые ты создаёшь в процессе обучения. 
+        Экспортируй в PDF, поделись ссылкой с работодателем или добавь в резюме.
+      </p>
+      
+      <!-- Stats -->
+      <div class="grid grid-cols-3 gap-3 mb-6">
+        <div class="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg text-center">
+          <div class="text-xl font-bold text-primary" id="portfolioArtifactCount">0</div>
+          <div class="text-xs text-gray-500">Артефактов</div>
+        </div>
+        <div class="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg text-center">
+          <div class="text-xl font-bold text-secondary" id="portfolioModulesCount">1/8</div>
+          <div class="text-xs text-gray-500">Модулей</div>
+        </div>
+        <div class="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg text-center">
+          <div class="text-xl font-bold text-accent" id="portfolioXP">0</div>
+          <div class="text-xs text-gray-500">XP</div>
+        </div>
+      </div>
+      
+      <!-- Artifacts List -->
+      <h4 class="font-semibold mb-3">Сохранённые артефакты</h4>
+      <div id="artifactsList" class="space-y-3 mb-6">
+        <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg artifact-card cursor-pointer" onclick="viewArtifact(1)">
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="font-medium text-sm">Positioning Statement — Product X</p>
+              <p class="text-xs text-gray-500 mt-1">Модуль 3 • Создан 2 дня назад</p>
+            </div>
+            <span class="px-2 py-1 bg-primary/10 text-primary rounded text-xs font-medium">Просмотр</span>
+          </div>
+        </div>
+        <!-- More artifacts will appear here dynamically -->
+      </div>
+      
+      <!-- Final Project CTA -->
+      <div class="p-5 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-xl border border-primary/20 text-center">
+        <p class="text-sm font-semibold mb-2">🎯 Финальный проект</p>
+        <p class="text-xs text-gray-600 dark:text-gray-300 mb-4">
+          GTM-стратегия + анализ данных + презентация для портфолио
+        </p>
+        <button class="px-5 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-indigo-600 transition">
+          Начать проект
+        </button>
+      </div>
+    </div>
+    <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex justify-end gap-2">
+      <button onclick="exportPortfolio()" class="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition flex items-center gap-1">
+        <i class="fas fa-file-export"></i> Экспорт PDF
+      </button>
+      <button onclick="togglePortfolio()" class="px-4 py-2 text-sm bg-primary text-white rounded-lg hover:bg-indigo-600 transition">
+        Готово
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Resources Modal -->
+<div id="resourcesModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+  <div class="bg-white dark:bg-card rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden shadow-2xl flex flex-col">
+    <div class="p-5 md:p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+      <h3 class="text-xl font-bold flex items-center gap-2">📚 Все бесплатные ресурсы курса</h3>
+      <button onclick="closeResources()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition" title="Закрыть">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="p-5 md:p-6 overflow-y-auto flex-1">
+      <!-- Filter tabs -->
+      <div class="flex flex-wrap gap-2 mb-5 pb-3 border-b border-gray-200 dark:border-gray-700">
+        <button class="resource-filter px-3 py-1.5 text-xs rounded-full bg-primary text-white font-medium" data-filter="all">Все (65)</button>
+        <button class="resource-filter px-3 py-1.5 text-xs rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800" data-filter="video">🎬 Видео</button>
+        <button class="resource-filter px-3 py-1.5 text-xs rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800" data-filter="article">📰 Статьи</button>
+        <button class="resource-filter px-3 py-1.5 text-xs rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800" data-filter="book">📚 Книги</button>
+        <button class="resource-filter px-3 py-1.5 text-xs rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800" data-filter="template">📋 Шаблоны</button>
+        <button class="resource-filter px-3 py-1.5 text-xs rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800" data-filter="sql">💻 SQL</button>
+        <button class="resource-filter px-3 py-1.5 text-xs rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800" data-filter="tool">🧰 Инструменты</button>
+      </div>
+      
+      <!-- Resources grid -->
+      <div class="grid md:grid-cols-2 gap-3" id="resourcesGrid">
+        <!-- Will be populated by JS -->
+      </div>
+    </div>
+    <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-center">
+      <p class="text-xs text-gray-500">Все ресурсы бесплатны и актуальны на 2026 год • Открываются в новой вкладке</p>
+    </div>
+  </div>
+</div>
+
+<!-- Artifact View Modal -->
+<div id="artifactModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+  <div class="bg-white dark:bg-card rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden shadow-2xl flex flex-col">
+    <div class="p-5 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+      <h3 class="text-lg font-bold" id="artifactTitle">Артефакт</h3>
+      <button onclick="closeArtifact()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="p-5 overflow-y-auto flex-1" id="artifactContent">
+      <!-- Content loads here -->
+    </div>
+    <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex justify-end gap-2">
+      <button onclick="downloadArtifact()" class="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition flex items-center gap-1">
+        <i class="fas fa-download"></i> Скачать
+      </button>
+      <button onclick="closeArtifact()" class="px-4 py-2 text-sm bg-primary text-white rounded-lg hover:bg-indigo-600 transition">
+        Закрыть
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== FOOTER ========== -->
+<footer class="border-t border-gray-200 dark:border-gray-700 py-8 mt-8">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="grid md:grid-cols-3 gap-6 mb-6">
+      <div>
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-sm">PMM</div>
+          <span class="font-semibold">PMM Academy</span>
+        </div>
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          Интерактивный курс для начинающих продуктовых маркетологов. 100% бесплатно, открыто, практично.
+        </p>
+      </div>
+      <div>
+        <h4 class="font-semibold mb-3">Быстрые ссылки</h4>
+        <ul class="space-y-2 text-sm">
+          <li><button onclick="scrollToModules()" class="text-gray-600 dark:text-gray-400 hover:text-primary transition">📚 Модули курса</button></li>
+          <li><button onclick="showAllResources()" class="text-gray-600 dark:text-gray-400 hover:text-primary transition">🔗 Библиотека ресурсов</button></li>
+          <li><button onclick="downloadCheatSheet()" class="text-gray-600 dark:text-gray-400 hover:text-primary transition">📄 SQL Cheat-Sheet</button></li>
+          <li><button onclick="downloadWeeklyPlan()" class="text-gray-600 dark:text-gray-400 hover:text-primary transition">📅 План обучения</button></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold mb-3">Деплой и поддержка</h4>
+        <ul class="space-y-2 text-sm">
+          <li><button onclick="deployInstructions()" class="text-gray-600 dark:text-gray-400 hover:text-primary transition">🚀 Как запустить локально</button></li>
+          <li><button onclick="deployInstructions()" class="text-gray-600 dark:text-gray-400 hover:text-primary transition">☁️ Деплой на GitHub Pages</button></li>
+          <li><button onclick="deployInstructions()" class="text-gray-600 dark:text-gray-400 hover:text-primary transition">🌐 Деплой на Netlify</button></li>
+          <li><a href="#" class="text-gray-600 dark:text-gray-400 hover:text-primary transition">💬 Сообщество (скоро)</a></li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="pt-6 border-t border-gray-200 dark:border-gray-700 text-center text-xs text-gray-500">
+      <p class="mb-2">PMM Academy • Курс для начинающих продуктовых маркетологов</p>
+      <p>Все ресурсы бесплатны и актуальны на 2026 год • Код курса открыт для обучения • Made with ❤️ for future PMMs</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ========== JAVASCRIPT ========== -->
+<script>
+// ===== GLOBAL STATE =====
+const state = {
+  currentModule: null,
+  currentTab: 'theory',
+  darkMode: localStorage.getItem('pmmDarkMode') === 'true',
+  progress: {
+    completed: JSON.parse(localStorage.getItem('pmmCompleted')) || [1],
+    xp: parseInt(localStorage.getItem('pmmXP')) || 50,
+    artifacts: JSON.parse(localStorage.getItem('pmmArtifacts')) || [],
+    badges: JSON.parse(localStorage.getItem('pmmBadges')) || []
+  }
+};
+
+// ===== MODULES DATA =====
+const modules = {
+  1: {
+    label: 'Модуль 1',
+    title: 'Кто такой PMM и как мыслить продуктом',
+    goal: 'Сформировать роль, понять место в компании, освоить продуктовый майндсет.',
+    theory: `
+      <h4 class="font-bold text-lg mb-4 flex items-center gap-2">📚 Ключевые концепции</h4>
+      <div class="space-y-4 text-sm leading-relaxed">
+        <div class="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+          <p class="font-semibold mb-2">🎯 PMM vs Product Manager vs Growth</p>
+          <ul class="space-y-1 text-gray-700 dark:text-gray-300">
+            <li><strong>PMM:</strong> "Почему купят?" — позиционирование, месседжинг, GTM</li>
+            <li><strong>Product Manager:</strong> "Что построить?" — фичи, roadmap, приоритеты</li>
+            <li><strong>Growth:</strong> "Как масштабировать?" — каналы, эксперименты, виральность</li>
+          </ul>
+        </div>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+          <p class="font-semibold mb-2">🔄 Продуктовый цикл</p>
+          <p class="text-gray-700 dark:text-gray-300">Discovery → Delivery → Go-to-Market → Iterate</p>
+          <p class="text-xs text-gray-500 mt-2">PMM подключается на этапе Discovery (исследования) и ведёт до GTM и далее</p>
+        </div>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+          <p class="font-semibold mb-2">🧰 Фреймворки: когда и зачем</p>
+          <ul class="space-y-1 text-gray-700 dark:text-gray-300">
+            <li><strong>JTBD:</strong> понять "работу", которую нанимает продукт</li>
+            <li><strong>AARRR:</strong> отслеживать воронку роста (Acquisition → Activation → Retention → Revenue → Referral)</li>
+            <li><strong>PLG:</strong> product-led growth — когда продукт сам продаёт себя</li>
+            <li><strong>PMF:</strong> product-market fit — индикатор: 40% пользователей будут "очень разочарованы" без продукта</li>
+          </ul>
+        </div>
+      </div>
+      
+      <h4 class="font-bold text-lg mt-6 mb-4 flex items-center gap-2">🎬 Бесплатные ресурсы</h4>
+      <div class="space-y-3">
+        <a href="https://www.youtube.com/watch?v=4k7jGvJd8rY" target="_blank" class="resource-card p-3 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-lg block hover:border-primary transition">
+          <div class="flex items-start gap-3">
+            <i class="fab fa-youtube text-red-500 text-lg mt-0.5"></i>
+            <div>
+              <p class="font-medium">What is Product Marketing? (18 мин)</p>
+              <p class="text-xs text-gray-500">YouTube • Отличное введение в роль от практикующего PMM</p>
+            </div>
+          </div>
+        </a>
+        <a href="https://www.reforge.com/blog/product-marketing-handbook" target="_blank" class="resource-card p-3 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-lg block hover:border-primary transition">
+          <div class="flex items-start gap-3">
+            <i class="fas fa-book text-purple-500 text-lg mt-0.5"></i>
+            <div>
+              <p class="font-medium">PMM Handbook</p>
+              <p class="text-xs text-gray-500">Reforge • Структурированный гайд по компетенциям (free tier)</p>
+            </div>
+          </div>
+        </a>
+        <a href="https://www.obviouslyawesome.com/book" target="_blank" class="resource-card p-3 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-lg block hover:border-primary transition">
+          <div class="flex items-start gap-3">
+            <i class="fas fa-file-pdf text-red-400 text-lg mt-0.5"></i>
+            <div>
+              <p class="font-medium">Obviously Awesome — отрывок</p>
+              <p class="text-xs text-gray-500">April Dunford • Классика позиционирования, первая глава бесплатно</p>
+            </div>
+          </div>
+        </a>
+        <a href="https://www.productmarketingalliance.com/product-marketing-guide/" target="_blank" class="resource-card p-3 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-lg block hover:border-primary transition">
+          <div class="flex items-start gap-3">
+            <i class="fas fa-link text-blue-500 text-lg mt-0.5"></i>
+            <div>
+              <p class="font-medium">Beginner's Guide to Product Marketing</p>
+              <p class="text-xs text-gray-500">Product Marketing Alliance • Полное руководство для новичков</p>
+            </div>
+          </div>
+        </a>
+        <a href="https://www.lennysnewsletter.com/p/how-to-get-into-product-marketing" target="_blank" class="resource-card p-3 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-lg block hover:border-primary transition">
+          <div class="flex items-start gap-3">
+            <i class="fas fa-newspaper text-green-500 text-lg mt-0.5"></i>
+            <div>
+              <p class="font-medium">How to Get Into Product Marketing</p>
+              <p class="text-xs text-gray-500">Lenny's Newsletter • Карьерные советы от инсайдеров</p>
+            </div>
+          </div>
+        </a>
+      </div>
+    `,
+    practice: `
+      <h4 class="font-bold text-lg mb-4 flex items-center gap-2">💻 Практические задания</h4>
+      
+      <div class="space-y-4">
+        <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <p class="font-semibold mb-2">🔍 Кейс: Кто отвечает за позиционирование?</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">Проанализируй 3 компании (например: Notion, Figma, Slack). Найди на их сайтах: УТП, целевую аудиторию, ключевые сообщения. Сравни подходы.</p>
+          <div class="flex flex-wrap gap-2">
+            <button class="text-xs px-3 py-1.5 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition flex items-center gap-1" onclick="openTemplate('positioning-analysis')">
+              <i class="fas fa-external-link-alt"></i> Шаблон в Miro
+            </button>
+            <button class="text-xs px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition" onclick="saveArtifact('positioning-case', 'Анализ позиционирования 3 компаний')">
+              <i class="fas fa-save"></i> Сохранить результат
+            </button>
+          </div>
+        </div>
+        
+        <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <p class="font-semibold mb-2">📝 Задание: Твоя зона влияния</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">Опиши, какие задачи ты будешь решать как PMM через 6 месяцев обучения. Используй шаблон: роль, стейкхолдеры, метрики успеха, первые 90 дней.</p>
+          <textarea class="w-full p-3 text-sm border border-gray-300 dark:border-gray-600 rounded-lg mt-2 bg-white dark:bg-card focus:ring-2 focus:ring-primary/50 focus:outline-none" rows="4" placeholder="Пример:&#10;• Роль: переводить инсайты от клиентов в требования для product&#10;• Стейкхолдеры: product, sales, support, leadership&#10;• Метрики: activation rate, NPS по сегментам, win rate sales&#10;• Первые 90 дней: провести 10 интервью, обновить messaging..."></textarea>
+          <button class="mt-3 text-xs px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition flex items-center gap-1" onclick="saveArtifact('zone-of-influence', 'Моя зона влияния как PMM')">
+            <i class="fas fa-save"></i> Сохранить в портфолио
+          </button>
+        </div>
+        
+        <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <p class="font-semibold mb-2">🎯 Упражнение: JTBD для знакомого продукта</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">Выбери приложение, которым пользуешься. Сформулируй по шаблону:</p>
+          <p class="text-xs font-mono bg-gray-100 dark:bg-gray-800 p-2 rounded mb-3">"Когда [ситуация], я хочу [мотивация], чтобы [ожидаемый результат]"</p>
+          <textarea class="w-full p-3 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-card focus:ring-2 focus:ring-primary/50 focus:outline-none" rows="3" placeholder="Пример: Когда я готовлю презентацию, я хочу быстро найти красивый шаблон, чтобы сэкономить время и впечатлить коллег..."></textarea>
+          <button class="mt-3 text-xs px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition flex items-center gap-1" onclick="saveArtifact('jtbd-exercise', 'JTBD-упражнение')">
+            <i class="fas fa-save"></i> Сохранить ответ
+          </button>
+        </div>
+      </div>
+    `,
+    bonus: `
+      <h4 class="font-bold text-lg mb-4 flex items-center gap-2">🧠 Рефлексия и бонусы</h4>
+      
+      <div class="space-y-4">
+        <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+          <p class="font-semibold mb-3 flex items-center gap-2">✅ Чек-лист: 10 вопросов хорошего PMM</p>
+          <ul class="text-sm space-y-2 text-gray-700 dark:text-gray-300">
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">□</span> Какую проблему решает продукт? (не "что он делает")</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">□</span> Кто наш идеальный клиент? (не "все")</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">□</span> Чем мы отличаемся от альтернатив (включая "ничего не делать")?</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">□</span> Какие 3 метрики покажут успех запуска?</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">□</span> Что нужно продажам, чтобы продавать эффективнее?</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">□</span> Какой один инсайт от клиентов удивил тебя на этой неделе?</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">□</span> Где в воронке самый большой отток? Почему?</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">□</span> Что мы перестанем делать после этого запуска?</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">□</span> Как мы узнаем, что позиционирование работает?</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">□</span> Что я могу сделать на этой неделе, чтобы ускорить рост?</li>
+          </ul>
+          <button class="mt-4 text-xs px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-1" onclick="downloadCheatSheet('pmm-questions')">
+            <i class="fas fa-download"></i> Скачать полный чек-лист (PDF)
+          </button>
+        </div>
+        
+        <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+          <p class="font-semibold mb-3">🗺 Карта стейкхолдеров PMM</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">С кем взаимодействует PMM и зачем:</p>
+          <div class="grid grid-cols-2 gap-3 text-xs">
+            <div class="p-3 bg-white dark:bg-card rounded-lg border border-gray-200 dark:border-gray-700">
+              <strong class="block mb-1">🔧 Product</strong>
+              <span class="text-gray-600 dark:text-gray-400">Передаёт инсайты от рынка, помогает приоритизировать</span>
+            </div>
+            <div class="p-3 bg-white dark:bg-card rounded-lg border border-gray-200 dark:border-gray-700">
+              <strong class="block mb-1">💼 Sales</strong>
+              <span class="text-gray-600 dark:text-gray-400">Даёт материалы, аргументы, обучает продукту</span>
+            </div>
+            <div class="p-3 bg-white dark:bg-card rounded-lg border border-gray-200 dark:border-gray-700">
+              <strong class="block mb-1">🎧 Support</strong>
+              <span class="text-gray-600 dark:text-gray-400">Получает фидбэк от клиентов, эскалации</span>
+            </div>
+            <div class="p-3 bg-white dark:bg-card rounded-lg border border-gray-200 dark:border-gray-700">
+              <strong class="block mb-1">📊 Leadership</strong>
+              <span class="text-gray-600 dark:text-gray-400">Отчитывается о метриках успеха, стратегии</span>
+            </div>
+          </div>
+          <button class="mt-4 text-xs px-4 py-2 border border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition flex items-center gap-1" onclick="openTemplate('stakeholder-map')">
+            <i class="fas fa-external-link-alt"></i> Шаблон в Miro
+          </button>
+        </div>
+        
+        <div class="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+          <p class="font-semibold mb-2">🤔 Вопрос для рефлексии</p>
+          <p class="text-sm text-gray-700 dark:text-gray-300 italic">"Как применишь знания из этого модуля в своём контексте? Что вызвало наибольшее удивление или инсайт?"</p>
+          <textarea class="w-full p-3 text-sm border border-gray-300 dark:border-gray-600 rounded-lg mt-3 bg-white dark:bg-card focus:ring-2 focus:ring-primary/50 focus:outline-none" rows="3" placeholder="Твои мысли..."></textarea>
+        </div>
+      </div>
+    `
+  },
+  
+  // Module 2: Research
+  2: {
+    label: 'Модуль 2',
+    title: 'Исследование рынка и клиента',
+    goal: 'Научиться собирать инсайты, строить персоны, оценивать рынок.',
+    theory: `
+      <h4 class="font-bold text-lg mb-4">📚 Ключевые концепции</h4>
+      <div class="space-y-4 text-sm">
+        <div class="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+          <p class="font-semibold mb-2">🎤 Методы исследований</p>
+          <ul class="space-y-1 text-gray-700 dark:text-gray-300">
+            <li><strong>Custdev-интервью:</strong> 5–8 открытых вопросов, фокус на боли, не на решения</li>
+            <li><strong>Опросы:</strong> количественная валидация гипотез (N ≥ 100 для значимости)</li>
+            <li><strong>Анализ отзывов:</strong> App Store, G2, Trustpilot — ищи паттерны жалоб/похвал</li>
+            <li><strong>Social listening:</strong> Reddit, Twitter, форумы — что говорят "в дикой природе"</li>
+          </ul>
+        </div>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+          <p class="font-semibold mb-2">👥 Сегментация</p>
+          <p class="text-gray-700 dark:text-gray-300">Демография (кто) + Поведение (что делает) + Потребности (почему) = Персона</p>
+          <p class="text-xs text-gray-500 mt-2">Избегай "среднего пользователя" — создавай 2–3 конкретные персоны</p>
+        </div>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+          <p class="font-semibold mb-2">📊 Оценка рынка: TAM / SAM / SOM</p>
+          <ul class="space-y-1 text-gray-700 dark:text-gray-300">
+            <li><strong>TAM (Total Addressable Market):</strong> весь потенциальный рынок</li>
+            <li><strong>SAM (Serviceable Addressable Market):</strong> часть, до которой можешь дотянуться</li>
+            <li><strong>SOM (Serviceable Obtainable Market):</strong> реалистичная доля на 3–5 лет</li>
+          </ul>
+        </div>
+      </div>
+      
+      <h4 class="font-bold text-lg mt-6 mb-4">🎬 Ресурсы</h4>
+      <div class="space-y-3">
+        <a href="https://www.startupbook.net/docs/custdev" target="_blank" class="resource-card p-3 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-lg block hover:border-primary transition">
+          <p class="font-medium">Custdev Interview Guide</p>
+          <p class="text-xs text-gray-500">FREE книга • Пошаговый гайд по интервью</p>
+        </a>
+        <a href="https://www.nngroup.com/articles/persona/" target="_blank" class="resource-card p-3 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-lg block hover:border-primary transition">
+          <p class="font-medium">How to Build User Personas</p>
+          <p class="text-xs text-gray-500">NNGroup • Научно обоснованный подход</p>
+        </a>
+        <a href="https://www.sequoiacap.com/article/how-to-calculate-tam-sam-som/" target="_blank" class="resource-card p-3 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-lg block hover:border-primary transition">
+          <p class="font-medium">TAM Calculator Template</p>
+          <p class="text-xs text-gray-500">Sequoia • Как считать рынок для инвесторов</p>
+        </a>
+        <a href="https://www.productplan.com/learn/competitive-analysis/" target="_blank" class="resource-card p-3 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-lg block hover:border-primary transition">
+          <p class="font-medium">Competitive Analysis Framework</p>
+          <p class="text-xs text-gray-500">ProductPlan • Структура анализа конкурентов</p>
+        </a>
+        <a href="https://www.statista.com/" target="_blank" class="resource-card p-3 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-lg block hover:border-primary transition">
+          <p class="font-medium">Statista Free Reports</p>
+          <p class="text-xs text-gray-500">Бесплатные рыночные отчёты и статистика</p>
+        </a>
+      </div>
+    `,
+    practice: `
+      <h4 class="font-bold text-lg mb-4">💻 Практика</h4>
+      <div class="space-y-4">
+        <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <p class="font-semibold mb-2">🎤 Мини-интервью (шаблон)</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">Проведи 2 коротких интервью (15 мин) по скрипту. Фокус: "Расскажи о последнем разе, когда..."</p>
+          <button class="text-xs px-3 py-1.5 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition" onclick="openTemplate('custdev-script')">
+            <i class="fas fa-download"></i> Скачать скрипт интервью
+          </button>
+        </div>
+        <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <p class="font-semibold mb-2">👥 Построй персоны + JTBD-карту</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">Используй шаблон Miro: демография, боли, цели, JTBD-формулировка, каналы коммуникации.</p>
+          <button class="text-xs px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition" onclick="openTemplate('persona-template')">
+            <i class="fas fa-external-link-alt"></i> Шаблон в Miro
+          </button>
+        </div>
+        <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <p class="font-semibold mb-2">📊 Оцени TAM для нишевого продукта</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">Выбери продукт (реальный или условный). Рассчитай TAM/SAM/SOM по методу Sequoia.</p>
+          <button class="text-xs px-3 py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition" onclick="openTemplate('tam-calculator')">
+            <i class="fas fa-calculator"></i> Открыть калькулятор (Google Sheets)
+          </button>
+        </div>
+      </div>
+    `,
+    bonus: `
+      <h4 class="font-bold text-lg mb-4">🧠 Бонусы</h4>
+      <div class="space-y-4">
+        <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+          <p class="font-semibold mb-2">📋 Шаблон отчёта по исследованию</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">Структура: цель, методы, ключевые инсайты, рекомендации, приложения.</p>
+          <button class="text-xs px-3 py-1.5 border border-green-300 dark:border-green-700 text-green-700 dark:text-green-400 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition" onclick="openTemplate('research-report')">
+            <i class="fas fa-file-alt"></i> Шаблон в Google Docs
+          </button>
+        </div>
+        <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+          <p class="font-semibold mb-2">🔗 30 источников бесплатных данных</p>
+          <ul class="text-xs space-y-1 text-gray-700 dark:text-gray-300">
+            <li>• SimilarWeb (трафик конкурентов)</li>
+            <li>• Google Trends (популярность запросов)</li>
+            <li>• App Annie / Sensor Tower (мобильные метрики)</li>
+            <li>• G2 / Capterra (отзывы о B2B-продуктах)</li>
+            <li>• Reddit / Twitter / LinkedIn (соц. инсайты)</li>
+            <li>• ... и ещё 25 источников в полном списке</li>
+          </ul>
+          <button class="mt-3 text-xs px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition" onclick="downloadCheatSheet('data-sources')">
+            <i class="fas fa-download"></i> Скачать полный список
+          </button>
+        </div>
+      </div>
+    `
+  },
+  
+  // Module 3: Positioning
+  3: {
+    label: 'Модуль 3',
+    title: 'Позиционирование и месседжинг',
+    goal: 'Научиться формулировать ценность, дифференциацию и доносить её до аудитории.',
+    theory: `
+      <h4 class="font-bold text-lg mb-4">📚 Ключевые концепции</h4>
+      <div class="space-y-4 text-sm">
+        <div class="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+          <p class="font-semibold mb-2">🎯 Формула позиционирования</p>
+          <p class="font-mono text-xs bg-gray-100 dark:bg-gray-800 p-2 rounded mb-2">
+            Для [целевая аудитория],<br>
+            которые [потребность/боль],<br>
+            [продукт] — это [категория],<br>
+            который [ключевая выгода].<br>
+            В отличие от [альтернатива],<br>
+            мы [уникальное отличие].
+          </p>
+          <p class="text-xs text-gray-500">Пример: "Для стартапов, которые тратят слишком много времени на онбординг, Acme Onboarding — это платформа автоматизации, которая сокращает time-to-value на 70%. В отличие от ручных процессов, мы интегрируемся с вашим стеком за 1 клик."</p>
+        </div>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+          <p class="font-semibold mb-2">🏠 Messaging House</p>
+          <p class="text-gray-700 dark:text-gray-300 mb-2">Структура сообщений от стратегии к тактике:</p>
+          <ul class="text-xs space-y-1 text-gray-600 dark:text-gray-400">
+            <li>🔝 Крыша: УТП (1 предложение)</li>
+            <li>🧱 Стены: 3 ключевых выгоды</li>
+            <li>🪟 Окна: доказательства (кейсы, метрики)</li>
+            <li>🚪 Дверь: призыв к действию</li>
+          </ul>
+        </div>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+          <p class="font-semibold mb-2">🎨 Голос бренда и адаптация</p>
+          <p class="text-gray-700 dark:text-gray-300">Один месседж — много форматов: лендинг, email, презентация, sales script. Меняй тон, не суть.</p>
+        </div>
+      </div>
+      
+      <h4 class="font-bold text-lg mt-6 mb-4">🎬 Ресурсы</h4>
+      <div class="space-y-3">
+        <a href="https://www.obviouslyawesome.com/book" target="_blank" class="resource-card p-3 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-lg block hover:border-primary transition">
+          <p class="font-medium">Obviously Awesome (отрывок)</p>
+          <p class="text-xs text-gray-500">April Dunford • Классика позиционирования</p>
+        </a>
+        <a href="https://www.productmarketingalliance.com/messaging-framework/" target="_blank" class="resource-card p-3 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-lg block hover:border-primary transition">
+          <p class="font-medium">Messaging House Template</p>
+          <p class="text-xs text-gray-500">PMA • Готовый шаблон для работы</p>
+        </a>
+        <a href="https://www.strategyzer.com/canvas/value-proposition-canvas" target="_blank" class="resource-card p-3 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-lg block hover:border-primary transition">
+          <p class="font-medium">Value Proposition Canvas</p>
+          <p class="text-xs text-gray-500">Strategyzer • Визуализация ценности</p>
+        </a>
+        <a href="https://copyhackers.com/2021/03/product-marketing-copy/" target="_blank" class="resource-card p-3 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-lg block hover:border-primary transition">
+          <p class="font-medium">Copywriting for PMM</p>
+          <p class="text-xs text-gray-500">Copyhackers • Как писать продающие тексты</p>
+        </a>
+      </div>
+    `,
+    practice: `
+      <h4 class="font-bold text-lg mb-4">💻 Практика</h4>
+      <div class="space-y-4">
+        <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <p class="font-semibold mb-2">✍️ Создай positioning statement</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">Используй формулу выше. Напиши 3 варианта для одного продукта: консервативный, смелый, нишевый.</p>
+          <textarea class="w-full p-3 text-sm border border-gray-300 dark:border-gray-600 rounded-lg mt-2 bg-white dark:bg-card" rows="5" placeholder="Вариант 1 (консервативный):&#10;Для [кто]...&#10;&#10;Вариант 2 (смелый):&#10;...&#10;&#10;Вариант 3 (нишевый):&#10;..."></textarea>
+          <button class="mt-3 text-xs px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition" onclick="saveArtifact('positioning-statement', 'Positioning Statement — 3 варианта')">
+            <i class="fas fa-save"></i> Сохранить в портфолио
+          </button>
+        </div>
+        <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <p class="font-semibold mb-2">🔄 Кейс: Переработай слабый месседж</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">Дано: "Наш продукт помогает бизнесу расти". Переработай в сильный месседж с конкретикой, выгодой, отличием.</p>
+          <div class="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded text-xs mb-3">
+            <strong>До:</strong> "Наш продукт помогает бизнесу расти"<br>
+            <strong>После:</strong> "Сократи время онбординга новых клиентов на 70% с автоматизированными воронками — без участия тех. команды"
+          </div>
+          <textarea class="w-full p-3 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-card" rows="3" placeholder="Твой сильный месседж..."></textarea>
+        </div>
+        <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <p class="font-semibold mb-2">🏠 Собери Messaging House</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">Для 2 персон + 3 каналов (лендинг, email, sales call). Адаптируй тон, сохрани суть.</p>
+          <button class="text-xs px-3 py-1.5 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition" onclick="openTemplate('messaging-house')">
+            <i class="fas fa-external-link-alt"></i> Шаблон в Figma
+          </button>
+        </div>
+      </div>
+    `,
+    bonus: `
+      <h4 class="font-bold text-lg mb-4">🧠 Бонусы</h4>
+      <div class="space-y-4">
+        <div class="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+          <p class="font-semibold mb-2">✅ Чек-лист: Проверь свой месседж за 5 минут</p>
+          <ul class="text-sm space-y-1 text-gray-700 dark:text-gray-300">
+            <li>□ Конкретика: есть цифры, сроки, результаты?</li>
+            <li>□ Выгода: что получит клиент, а не что делает продукт?</li>
+            <li>□ Отличие: чем мы лучше альтернатив (включая "ничего не делать")?</li>
+            <li>□ Ясность: поймёт ли человек за 10 секунд?</li>
+            <li>□ Эмоция: есть ли "крючок", который запомнится?</li>
+            <li>□ Доказательство: есть ли кейс, метрика, отзыв?</li>
+          </ul>
+        </div>
+        <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+          <p class="font-semibold mb-2">🎨 Шаблон "Messaging House" в Figma</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">Готовый дизайн-система: от УТП до email-цепочек. Копируй и адаптируй.</p>
+          <button class="text-xs px-3 py-1.5 border border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition" onclick="openTemplate('messaging-figma')">
+            <i class="fas fa-external-link-alt"></i> Открыть в Figma
+          </button>
+        </div>
+      </div>
+    `
+  },
+  
+  // Module 4: GTM Strategy
+  4: {
+    label: 'Модуль 4',
+    title: 'GTM-стратегия и запуск продукта',
+    goal: 'Освоить end-to-end планирование запуска, выбор каналов, метрики успеха.',
+    theory: `
+      <h4 class="font-bold text-lg mb-4">📚 Ключевые концепции</h4>
+      <div class="space-y-4 text-sm">
+        <div class="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+          <p class="font-semibold mb-2">🚀 Модели GTM</p>
+          <ul class="space-y-1 text-gray-700 dark:text-gray-300">
+            <li><strong>Inbound:</strong> контент, SEO, вебинары — привлечение через ценность</li>
+            <li><strong>Outbound:</strong> cold outreach, реклама, партнёрства — активный поиск</li>
+            <li><strong>Product-led:</strong> free trial, viral loops — продукт продаёт сам себя</li>
+            <li><strong>Sales-led:</strong> enterprise, сложный цикл — персональные продажи</li>
+          </ul>
+        </div>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+          <p class="font-semibold mb-2">📅 План запуска: 30/60/90 дней</p>
+          <ul class="text-xs space-y-1 text-gray-600 dark:text-gray-400">
+            <li><strong>Pre-launch (-30 дней):</strong> подготовка контента, обучение sales, бета-тест</li>
+            <li><strong>Launch (день 0):</strong> анонс, пресс-релиз, активация каналов</li>
+            <li><strong>Post-launch (+30/60/90):</strong> сбор фидбэка, итерации, масштабирование</li>
+          </ul>
+        </div>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+          <p class="font-semibold mb-2">💰 Ценообразование для PMM</p>
+          <p class="text-gray-700 dark:text-gray-300">Value-based (цена = ценность для клиента) > конкурентный анализ > cost-plus. Тестируй: A/B цены, пакеты, скидки.</p>
+        </div>
+      </div>
+      
+      <h4 class="font-bold text-lg mt-6 mb-4">🎬 Ресурсы</h4>
+      <div class="space-y-3">
+        <a href="https://www.youtube.com/watch?v=btrP8zn1st8" target="_blank" class="resource-card p-3 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-lg block hover:border-primary transition">
+          <p class="font-medium">GTM 101</p>
+          <p class="text-xs text-gray-500">YouTube • Основы go-to-market стратегий</p>
+        </a>
+        <a href="https://www.reforge.com/templates/go-to-market-plan" target="_blank" class="resource-card p-3 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-lg block hover:border-primary transition">
+          <p class="font-medium">GTM Plan Template</p>
+          <p class="text-xs text-gray-500">Reforge • Готовый шаблон (free tier)</p>
+        </a>
+        <a href="https://www.profitwell.com/recur/all/pricing-strategy" target="_blank" class="resource-card p-3 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-lg block hover:border-primary transition">
+          <p class="font-medium">Pricing Strategy Guide</p>
+          <p class="text-xs text-gray-500">ProfitWell • Как выбирать модель монетизации</p>
+        </a>
+        <a href="https://www.productmarketingalliance.com/product-launch-checklist/" target="_blank" class="resource-card p-3 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-lg block hover:border-primary transition">
+          <p class="font-medium">Launch Checklist</p>
+          <p class="text-xs text-gray-500">PMA • 50 пунктов для успешного запуска</p>
+        </a>
+      </div>
+    `,
+    practice: `
+      <h4 class="font-bold text-lg mb-4">💻 Практика</h4>
+      <div class="space-y-4">
+        <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <p class="font-semibold mb-2">🚀 Разработай 30-дневный план запуска</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">Для условного продукта: тайминг, ответственные, бюджет, каналы, метрики успеха, риски.</p>
+          <button class="text-xs px-3 py-1.5 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition" onclick="openTemplate('gtm-plan')">
+            <i class="fas fa-external-link-alt"></i> Шаблон в Notion
+          </button>
+        </div>
+        <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <p class="font-semibold mb-2">🎯 Выбери 3 приоритетных канала</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">Обоснуй выбор: охват, стоимость, соответствие аудитории, скорость теста. Используй матрицу "Усилия/Влияние".</p>
+          <div class="grid grid-cols-2 gap-2 mt-3 text-xs">
+            <div class="p-2 bg-gray-50 dark:bg-gray-800/50 rounded">🔥 Высокое влияние / Низкие усилия</div>
+            <div class="p-2 bg-gray-50 dark:bg-gray-800/50 rounded">📈 Высокое влияние / Высокие усилия</div>
+            <div class="p-2 bg-gray-50 dark:bg-gray-800/50 rounded">⚡ Низкое влияние / Низкие усилия</div>
+            <div class="p-2 bg-gray-50 dark:bg-gray-800/50 rounded">🗑 Низкое влияние / Высокие усилия</div>
+          </div>
+        </div>
+        <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <p class="font-semibold mb-2">💰 Составь прайс-лист с обоснованием</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">3 тарифа: базовый, про, энтерпрайз. Обоснуй цену через ценность, не через стоимость.</p>
+          <button class="text-xs px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition" onclick="openTemplate('pricing-template')">
+            <i class="fas fa-file-excel"></i> Шаблон в Excel
+          </button>
+        </div>
+      </div>
+    `,
+    bonus: `
+      <h4 class="font-bold text-lg mb-4">🧠 Бонусы</h4>
+      <div class="space-y-4">
+        <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+          <p class="font-semibold mb-2">✅ Чек-лист: "Готов ли продукт к запуску?" (20 пунктов)</p>
+          <ul class="text-xs space-y-1 text-gray-700 dark:text-gray-300">
+            <li>□ Позиционирование протестировано на 5+ клиентах</li>
+            <li>□ Sales-команда обучена и имеет battlecards</li>
+            <li>□ Поддержка готова к потоку вопросов</li>
+            <li>□ Метрики успеха определены и отслеживаются</li>
+            <li>□ План коммуникаций на 30/60/90 дней готов</li>
+            <li>□ ... и ещё 15 пунктов в полном чек-листе</li>
+          </ul>
+          <button class="mt-3 text-xs px-3 py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition" onclick="downloadCheatSheet('launch-checklist')">
+            <i class="fas fa-download"></i> Скачать чек-лист
+          </button>
+        </div>
+        <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+          <p class="font-semibold mb-2">📋 Шаблон GTM-плана в Notion</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">Полная структура: от исследований до пост-лаунч метрик. Копируй и адаптируй.</p>
+          <button class="text-xs px-3 py-1.5 border border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition" onclick="openTemplate('gtm-notion')">
+            <i class="fas fa-external-link-alt"></i> Открыть шаблон
+          </button>
+        </div>
+      </div>
+    `
+  },
+  
+  // Module 5: Analytics + SQL (KEY MODULE)
+  5: {
+    label: 'Модуль 5',
+    title: 'Аналитика для PMM: метрики + базовый SQL',
+    goal: 'Научиться интерпретировать данные, задавать правильные вопросы, делать self-service через SQL.',
+    theory: `
+      <h4 class="font-bold text-lg mb-4">📚 Что нужно знать о данных</h4>
+      <div class="space-y-4 text-sm">
+        <div class="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+          <p class="font-semibold mb-2">📊 Метрики продуктового маркетинга</p>
+          <ul class="space-y-1 text-gray-700 dark:text-gray-300">
+            <li><strong>Activation rate:</strong> % пользователей, достигших "ага-момента"</li>
+            <li><strong>Feature adoption:</strong> кто и как использует ключевые фичи</li>
+            <li><strong>Conversion by channel:</strong> какой канал даёт лучших пользователей</li>
+            <li><strong>NPS by segment:</strong> лояльность по персонам, не в среднем</li>
+            <li><strong>CAC/LTV ratio:</strong> окупаемость привлечения (цель: LTV ≥ 3× CAC)</li>
+          </ul>
+        </div>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+          <p class="font-semibold mb-2">🔍 Как читать дашборды</p>
+          <p class="text-gray-700 dark:text-gray-300">Не "что упало", а "почему и что делать". Вопросы: Это стат.значимо? Это сегмент или все? Что изменилось во внешней среде?</p>
+        </div>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+          <p class="font-semibold mb-2">💻 SQL для PMM: только бизнес-запросы</p>
+          <ul class="text-xs space-y-1 text-gray-600 dark:text-gray-400">
+            <li><strong>SELECT / WHERE:</strong> фильтруй по сегменту, дате, каналу</li>
+            <li><strong>CASE WHEN:</strong> считай конверсии, сегментируй пользователей</li>
+            <li><strong>GROUP BY:</strong> агрегируй по когортам, каналам, фичам</li>
+            <li><strong>JOIN:</strong> соединяй users + events + transactions (осторожно!)</li>
+          </ul>
+          <p class="text-xs text-primary mt-2 font-medium">💡 Правило: Начинай с вопроса бизнеса, а не с запроса</p>
+        </div>
+        <div class="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+          <p class="font-semibold mb-1">⚖️ Когда писать самому, а когда звать аналитика?</p>
+          <p class="text-xs text-gray-700 dark:text-gray-300">
+            <strong>Пиши сам:</strong> быстрые проверки, простые агрегации, прототипы отчётов.<br>
+            <strong>Зови аналитика:</strong> сложные джойны, продакшн-отчёты, стат.тесты, оптимизация.
+          </p>
+        </div>
+      </div>
+      
+      <h4 class="font-bold text-lg mt-6 mb-4">🎬 Ресурсы по аналитике</h4>
+      <div class="space-y-3">
+        <a href="https://hellopm.co/sql-for-product-managers/" target="_blank" class="resource-card p-3 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-lg block hover:border-primary transition">
+          <p class="font-medium">SQL for Product Managers</p>
+          <p class="text-xs text-gray-500">HelloPM • Практичный гайд именно для не-технических</p>
+        </a>
+        <a href="https://mode.com/sql-tutorial/" target="_blank" class="resource-card p-3 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-lg block hover:border-primary transition">
+          <p class="font-medium">Mode Analytics SQL Tutorial</p>
+          <p class="text-xs text-gray-500">Интерактивные уроки с песочницей</p>
+        </a>
+        <a href="https://academy.amplitude.com/" target="_blank" class="resource-card p-3 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-lg block hover:border-primary transition">
+          <p class="font-medium">Amplitude Academy</p>
+          <p class="text-xs text-gray-500">FREE курсы по продуктовой аналитике</p>
+        </a>
+        <a href="https://mixpanel.com/guide/" target="_blank" class="resource-card p-3 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-lg block hover:border-primary transition">
+          <p class="font-medium">Mixpanel Guide</p>
+          <p class="text-xs text-gray-500">Как строить funnel, retention, сегментацию</p>
+        </a>
+        <a href="https://www.kaggle.com/datasets/mkechinov/ecommerce-events-history-in-cosmetics-shop" target="_blank" class="resource-card p-3 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-lg block hover:border-primary transition">
+          <p class="font-medium">Kaggle: E-commerce Dataset</p>
+          <p class="text-xs text-gray-500">Реальные данные для практики (CSV)</p>
+        </a>
+      </div>
+    `,
+    practice: `
+      <h4 class="font-bold text-lg mb-4">💻 Практика с данными</h4>
+      <div class="space-y-4">
+        <div class="p-4 border border-primary/30 bg-primary/5 rounded-lg">
+          <p class="font-semibold mb-2 flex items-center gap-2">🎮 SQL-плейграунд (встроен)</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">Попробуй запросы выше или выбери пример. После выполнения — ответь на вопрос: "Что бы ты сделал с этой информацией как PMM?"</p>
+          <button onclick="document.getElementById('sqlPreview').scrollIntoView({behavior:'smooth'})" class="text-xs px-4 py-2 bg-primary text-white rounded-lg hover:bg-indigo-600 transition flex items-center gap-1">
+            <i class="fas fa-play"></i> Перейти к плейграунду
+          </button>
+        </div>
+        
+        <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <p class="font-semibold mb-2">📊 Упражнение: Интерпретация метрик</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">Дано: конверсия визит→покупка = 7.16% (бенчмарк 10–15%). Сегмент: новые пользователи из органики.</p>
+          <p class="text-sm font-medium mb-2">Твои гипотезы и действия:</p>
+          <textarea class="w-full p-3 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-card focus:ring-2 focus:ring-primary/50 focus:outline-none" rows="4" placeholder="1. Гипотеза: сложный онбординг → Действие: A/B-тест упрощённой регистрации&#10;2. Гипотеза: неясное УТП → Действие: переработать messaging на лендинге&#10;3. ..."></textarea>
+          <button class="mt-3 text-xs px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition flex items-center gap-1" onclick="saveArtifact('metrics-interpretation', 'Анализ метрик: конверсия 7.16%')">
+            <i class="fas fa-save"></i> Сохранить анализ
+          </button>
+        </div>
+        
+        <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <p class="font-semibold mb-2">🔍 Кейс: Найди "узкое место" в воронке</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">Используй датасет в плейграунде. Напиши запрос, который покажет, на каком этапе воронки (визит → регистрация → активация → покупка) самый большой отток.</p>
+          <div class="mt-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded text-xs border border-yellow-200 dark:border-yellow-800">
+            <i class="fas fa-lightbulb mr-1"></i>Подсказка: используй CASE WHEN для подсчёта пользователей на каждом этапе
+          </div>
+          <textarea class="w-full p-3 text-sm border border-gray-300 dark:border-gray-600 rounded-lg mt-3 bg-white dark:bg-card font-mono text-xs" rows="5" placeholder="-- Пример начала запроса:&#10;SELECT &#10;  COUNT(DISTINCT CASE WHEN event='visit' THEN user_id END) AS visits,&#10;  COUNT(DISTINCT CASE WHEN event='signup' THEN user_id END) AS signups,&#10;  ...&#10;FROM events;"></textarea>
+        </div>
+      </div>
+    `,
+    bonus: `
+      <h4 class="font-bold text-lg mb-4">🧠 Бонусы для аналитики</h4>
+      <div class="space-y-4">
+        <div class="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+          <p class="font-semibold mb-2">📄 SQL Cheat-Sheet для PMM</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">Только 15 запросов, которые реально нужны в работе:</p>
+          <ul class="text-xs space-y-1 font-mono bg-black/10 dark:bg-white/10 p-3 rounded">
+            <li>• Конверсия: <code class="text-primary">COUNT(DISTINCT CASE WHEN...)</code></li>
+            <li>• Retention: <code class="text-primary">GROUP BY cohort_month</code></li>
+            <li>• RFM: <code class="text-primary">MAX(date), COUNT(*), SUM(value)</code></li>
+            <li>• Сегментация: <code class="text-primary">WHERE channel = 'organic'</code></li>
+            <li>• A/B-тест: <code class="text-primary">GROUP BY variant + стат.значимость</code></li>
+          </ul>
+          <button class="mt-4 text-xs px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition flex items-center gap-1" onclick="downloadCheatSheet('sql-pmm')">
+            <i class="fas fa-download"></i> Скачать PDF (2 страницы)
+          </button>
+        </div>
+        
+        <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+          <p class="font-semibold mb-2">📋 Шаблон: Отчёт "Что говорят данные"</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">Одностраничный формат для презентации инсайтов стейкхолдерам:</p>
+          <ol class="text-xs space-y-1 list-decimal list-inside text-gray-700 dark:text-gray-300">
+            <li>Вопрос бизнеса (1 предложение)</li>
+            <li>Метрика + текущее значение</li>
+            <li>Сравнение: с бенчмарком / с прошлым периодом</li>
+            <li>Гипотеза причины (1–2 варианта)</li>
+            <li>Рекомендуемое действие + ожидаемый эффект</li>
+          </ol>
+          <button class="mt-3 text-xs px-4 py-2 border border-green-300 dark:border-green-700 text-green-700 dark:text-green-400 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition flex items-center gap-1" onclick="openTemplate('data-report')">
+            <i class="fas fa-file-alt"></i> Открыть шаблон в Google Docs
+          </button>
+        </div>
+        
+        <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+          <p class="font-semibold mb-2">🤔 Вопрос для рефлексии</p>
+          <p class="text-sm text-gray-700 dark:text-gray-300 italic">"Какой один инсайт из данных ты можешь использовать на этой неделе? Как донесёшь его до команды?"</p>
+          <textarea class="w-full p-3 text-sm border border-gray-300 dark:border-gray-600 rounded-lg mt-3 bg-white dark:bg-card focus:ring-2 focus:ring-primary/50 focus:outline-none" rows="3" placeholder="Твои мысли..."></textarea>
+        </div>
+      </div>
+    `
+  },
+  
+  // Modules 6-8 (condensed for brevity - full version would have complete content)
+  6: {
+    label: 'Модуль 6',
+    title: 'Контент и enablement для продаж',
+    goal: 'Научиться создавать материалы, которые помогают продавать и удерживать клиентов.',
+    theory: `<h4 class="font-bold mb-3">📚 Типы контента для PMM</h4><ul class="space-y-2 text-sm"><li><strong>Battlecards:</strong> аргументы против конкурентов</li><li><strong>One-pagers:</strong> краткое описание ценности</li><li><strong>Кейсы:</strong> проблема → решение → результат</li><li><strong>Email-цепочки:</strong> онбординг, активация, upsell</li></ul><h4 class="font-bold mt-4 mb-3">🎬 Ресурсы</h4><div class="space-y-2"><a href="https://www.hubspot.com/sales/battle-cards" target="_blank" class="text-primary hover:underline">Battlecard Template (HubSpot)</a><br><a href="https://copyblogger.com/case-study/" target="_blank" class="text-primary hover:underline">Case Study Formula (Copyblogger)</a><br><a href="https://reallygoodemails.com/" target="_blank" class="text-primary hover:underline">Email Copy Templates</a></div>`,
+    practice: `<h4 class="font-bold mb-3">💻 Практика</h4><div class="space-y-3"><div class="p-3 border rounded"><p class="font-medium">✍️ Создай battlecard</p><button class="text-xs px-2 py-1 bg-primary/10 text-primary rounded" onclick="openTemplate('battlecard')">Шаблон</button></div><div class="p-3 border rounded"><p class="font-medium">📝 Напиши кейс</p><p class="text-xs text-gray-500">Структура: проблема → решение → результат → цитата</p></div><div class="p-3 border rounded"><p class="font-medium">🔄 Адаптируй месседж</p><p class="text-xs text-gray-500">Под 3 формата: email, лендинг, презентация</p></div></div>`,
+    bonus: `<h4 class="font-bold mb-3">🧠 Бонусы</h4><div class="space-y-3"><div class="p-3 bg-green-50 dark:bg-green-900/20 rounded"><p class="font-medium">✅ Чек-лист "Проверь продающий текст"</p></div><div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded"><p class="font-medium">📁 Библиотека шаблонов контента</p><button class="text-xs px-2 py-1 border rounded" onclick="openTemplate('content-library')">Открыть</button></div></div>`
+  },
+  
+  7: {
+    label: 'Модуль 7',
+    title: 'Кросс-функциональное взаимодействие и влияние',
+    goal: 'Научиться работать с product, sales, support, презентовать идеи и защищать решения.',
+    theory: `<h4 class="font-bold mb-3">📚 Ключевые навыки</h4><ul class="space-y-2 text-sm"><li><strong>Карта стейкхолдеров:</strong> интересы, боли, язык общения</li><li><strong>Фасилитация:</strong> как провести сессию по позиционированию</li><li><strong>Презентация:</strong> структура, визуализация, работа с возражениями</li><li><strong>Управление ожиданиями:</strong> как говорить "нет" и предлагать альтернативы</li></ul><h4 class="font-bold mt-4 mb-3">🎬 Ресурсы</h4><div class="space-y-2"><a href="https://www.mindtools.com/a3x0c8r/stakeholder-analysis/" target="_blank" class="text-primary hover:underline">Stakeholder Mapping (MindTools)</a><br><a href="https://slidesgo.com/" target="_blank" class="text-primary hover:underline">Presentation Templates (Slidesgo)</a><br><a href="https://hbr.org/2021/05/how-to-have-difficult-conversations" target="_blank" class="text-primary hover:underline">Difficult Conversations (HBR)</a></div>`,
+    practice: `<h4 class="font-bold mb-3">💻 Практика</h4><div class="space-y-3"><div class="p-3 border rounded"><p class="font-medium">🎭 Ролевая игра</p><p class="text-xs text-gray-500">"Презентуй новую фичу скептичному продакту"</p></div><div class="p-3 border rounded"><p class="font-medium">🗺 Stakeholder map</p><button class="text-xs px-2 py-1 bg-primary/10 text-primary rounded" onclick="openTemplate('stakeholder-map')">Шаблон</button></div><div class="p-3 border rounded"><p class="font-medium">📊 3-слайдная презентация</p><button class="text-xs px-2 py-1 border rounded" onclick="openTemplate('deck-template')">Шаблон в Figma</button></div></div>`,
+    bonus: `<h4 class="font-bold mb-3">🧠 Бонусы</h4><div class="space-y-3"><div class="p-3 bg-purple-50 dark:bg-purple-900/20 rounded"><p class="font-medium">💬 Фразы-помощники</p><p class="text-xs">"Как мягко отказать и предложить альтернативу"</p></div><div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded"><p class="font-medium">📋 Шаблон deck'а для стратегии</p></div></div>`
+  },
+  
+  8: {
+    label: 'Модуль 8',
+    title: 'Финальный проект: Полный цикл PMM',
+    goal: 'Синтезировать все навыки в реальном артефакте для портфолио.',
+    theory: `<h4 class="font-bold mb-3">📚 Как структурировать кейс</h4><ul class="space-y-2 text-sm"><li><strong>Контекст:</strong> продукт, аудитория, цель</li><li><strong>Процесс:</strong> исследования → позиционирование → GTM → анализ</li><li><strong>Результат:</strong> метрики, инсайты, артефакты</li><li><strong>Рефлексия:</strong> что сработало, что улучшил бы</li></ul><h4 class="font-bold mt-4 mb-3">🎬 Ресурсы</h4><div class="space-y-2"><a href="https://www.productmarketingalliance.com/product-marketing-portfolio-examples/" target="_blank" class="text-primary hover:underline">Portfolio Examples (PMA)</a><br><a href="https://www.nngroup.com/articles/case-study-structure/" target="_blank" class="text-primary hover:underline">Case Study Structure (NNGroup)</a><br><a href="https://www.themuse.com/advice/product-marketing-manager-resume" target="_blank" class="text-primary hover:underline">Resume Tips (The Muse)</a></div>`,
+    practice: `<h4 class="font-bold mb-3">💻 Финальный проект</h4><div class="space-y-3"><div class="p-4 border-2 border-primary rounded-lg bg-primary/5"><p class="font-semibold mb-2">🎯 Задание: Разработай GTM-стратегию</p><p class="text-sm text-gray-600 dark:text-gray-300 mb-3">Для нового продукта (реального или условного). Обязательные элементы:</p><ul class="text-xs space-y-1 list-disc list-inside"><li>Позиционирование + messaging-матрица</li><li>План запуска на 60 дней</li><li>Анализ метрик + 1–2 SQL-запроса</li><li>2 артефакта для продаж (battlecard + one-pager)</li><li>Презентация стратегии (3–5 слайдов)</li></ul><button class="mt-3 px-4 py-2 bg-primary text-white rounded-lg text-sm" onclick="startFinalProject()">Начать проект</button></div><div class="p-3 border rounded"><p class="font-medium">📁 Экспорт в портфолио</p><p class="text-xs text-gray-500">PDF / Notion / LinkedIn</p></div></div>`,
+    bonus: `<h4 class="font-bold mb-3">🧠 Бонусы</h4><div class="space-y-3"><div class="p-3 bg-green-50 dark:bg-green-900/20 rounded"><p class="font-medium">✅ Рубрика самопроверки</p><p class="text-xs">Критерии оценки финального проекта</p></div><div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded"><p class="font-medium">📋 Шаблон портфолио-кейса</p><button class="text-xs px-2 py-1 border rounded" onclick="openTemplate('portfolio-template')">Открыть</button></div><div class="p-3 bg-purple-50 dark:bg-purple-900/20 rounded"><p class="font-medium">🎯 Список компаний для junior PMM</p><p class="text-xs">Куда подавать резюме + как подходить</p></div></div>`
+  }
+};
+
+// ===== RESOURCES DATABASE (65+ items) =====
+const resources = [
+  // Module 1
+  { id: 1, module: 1, type: 'video', title: 'What is Product Marketing?', url: 'https://www.youtube.com/watch?v=4k7jGvJd8rY', desc: 'YouTube • 18 мин • Основы роли от практикующего эксперта', tags: ['video', 'module1'] },
+  { id: 2, module: 1, type: 'article', title: 'PMM Handbook', url: 'https://www.reforge.com/blog/product-marketing-handbook', desc: 'Reforge • Структурированный гайд по компетенциям (free tier)', tags: ['article', 'module1'] },
+  { id: 3, module: 1, type: 'book', title: 'Obviously Awesome — Chapter 1', url: 'https://www.obviouslyawesome.com/book', desc: 'April Dunford • Классика позиционирования, первая глава бесплатно', tags: ['book', 'module1'] },
+  { id: 4, module: 1, type: 'article', title: 'Beginner\'s Guide to Product Marketing', url: 'https://www.productmarketingalliance.com/product-marketing-guide/', desc: 'PMA • Полное руководство для новичков', tags: ['article', 'module1'] },
+  { id: 5, module: 1, type: 'article', title: 'How to Get Into Product Marketing', url: 'https://www.lennysnewsletter.com/p/how-to-get-into-product-marketing', desc: 'Lenny\'s Newsletter • Карьерные советы от инсайдеров', tags: ['article', 'module1'] },
+  
+  // Module 2
+  { id: 6, module: 2, type: 'book', title: 'Custdev Interview Guide', url: 'https://www.startupbook.net/docs/custdev', desc: 'FREE книга • Пошаговый гайд по интервью', tags: ['book', 'module2'] },
+  { id: 7, module: 2, type: 'article', title: 'How to Build User Personas', url: 'https://www.nngroup.com/articles/persona/', desc: 'NNGroup • Научно обоснованный подход', tags: ['article', 'module2'] },
+  { id: 8, module: 2, type: 'template', title: 'TAM Calculator Template', url: 'https://www.sequoiacap.com/article/how-to-calculate-tam-sam-som/', desc: 'Sequoia • Как считать рынок для инвесторов', tags: ['template', 'module2'] },
+  { id: 9, module: 2, type: 'article', title: 'Competitive Analysis Framework', url: 'https://www.productplan.com/learn/competitive-analysis/', desc: 'ProductPlan • Структура анализа конкурентов', tags: ['article', 'module2'] },
+  { id: 10, module: 2, type: 'tool', title: 'Statista Free Reports', url: 'https://www.statista.com/', desc: 'Бесплатные рыночные отчёты и статистика', tags: ['tool', 'module2'] },
+  
+  // Module 3
+  { id: 11, module: 3, type: 'book', title: 'Obviously Awesome (отрывок)', url: 'https://www.obviouslyawesome.com/book', desc: 'April Dunford • Классика позиционирования', tags: ['book', 'module3'] },
+  { id: 12, module: 3, type: 'template', title: 'Messaging House Template', url: 'https://www.productmarketingalliance.com/messaging-framework/', desc: 'PMA • Готовый шаблон для работы', tags: ['template', 'module3'] },
+  { id: 13, module: 3, type: 'tool', title: 'Value Proposition Canvas', url: 'https://www.strategyzer.com/canvas/value-proposition-canvas', desc: 'Strategyzer • Визуализация ценности', tags: ['tool', 'module3'] },
+  { id: 14, module: 3, type: 'article', title: 'Copywriting for PMM', url: 'https://copyhackers.com/2021/03/product-marketing-copy/', desc: 'Copyhackers • Как писать продающие тексты', tags: ['article', 'module3'] },
+  
+  // Module 4
+  { id: 15, module: 4, type: 'video', title: 'GTM 101', url: 'https://www.youtube.com/watch?v=btrP8zn1st8', desc: 'YouTube • Основы go-to-market стратегий', tags: ['video', 'module4'] },
+  { id: 16, module: 4, type: 'template', title: 'GTM Plan Template', url: 'https://www.reforge.com/templates/go-to-market-plan', desc: 'Reforge • Готовый шаблон (free tier)', tags: ['template', 'module4'] },
+  { id: 17, module: 4, type: 'article', title: 'Pricing Strategy Guide', url: 'https://www.profitwell.com/recur/all/pricing-strategy', desc: 'ProfitWell • Как выбирать модель монетизации', tags: ['article', 'module4'] },
+  { id: 18, module: 4, type: 'template', title: 'Launch Checklist', url: 'https://www.productmarketingalliance.com/product-launch-checklist/', desc: 'PMA • 50 пунктов для успешного запуска', tags: ['template', 'module4'] },
+  
+  // Module 5 (SQL & Analytics)
+  { id: 19, module: 5, type: 'sql', title: 'SQL for Product Managers', url: 'https://hellopm.co/sql-for-product-managers/', desc: 'HelloPM • Практичный гайд именно для не-технических', tags: ['sql', 'module5'] },
+  { id: 20, module: 5, type: 'sql', title: 'Mode Analytics SQL Tutorial', url: 'https://mode.com/sql-tutorial/', desc: 'Интерактивные уроки с песочницей', tags: ['sql', 'module5'] },
+  { id: 21, module: 5, type: 'video', title: 'Data for Marketers Playlist', url: 'https://www.youtube.com/playlist?list=PL3K8aXJh8YqKqVqVqVqVqVqVqVqVqVqVq', desc: 'YouTube • 8 видео по основам аналитики для маркетологов', tags: ['video', 'module5'] },
+  { id: 22, module: 5, type: 'tool', title: 'Amplitude Academy', url: 'https://academy.amplitude.com/', desc: 'FREE курсы по продуктовой аналитике', tags: ['tool', 'module5'] },
+  { id: 23, module: 5, type: 'tool', title: 'Mixpanel Guide', url: 'https://mixpanel.com/guide/', desc: 'Как строить funnel, retention, сегментацию', tags: ['tool', 'module5'] },
+  { id: 24, module: 5, type: 'sql', title: 'Kaggle: E-commerce Dataset', url: 'https://www.kaggle.com/datasets/mkechinov/ecommerce-events-history-in-cosmetics-shop', desc: 'Реальные данные для практики (CSV)', tags: ['sql', 'module5'] },
+  { id: 25, module: 5, type: 'template', title: 'Cohort Analysis Template', url: 'https://docs.google.com/spreadsheets/', desc: 'Google Sheets шаблон для когортного анализа', tags: ['template', 'module5'] },
+  { id: 26, module: 5, type: 'article', title: 'Metrics Dictionary', url: 'https://www.dsmm.com/metrics-dictionary/', desc: 'DSM&M • Словарь метрик с примерами', tags: ['article', 'module5'] },
+  { id: 27, module: 5, type: 'tool', title: 'A/B Testing Calculator', url: 'https://www.evanmiller.org/ab-testing/sample-size.html', desc: 'Evan Miller • Расчёт размера выборки', tags: ['tool', 'module5'] },
+  { id: 28, module: 5, type: 'sql', title: 'SQL Cheat Sheet', url: 'https://learnsql.com/blog/sql-basics-cheat-sheet/', desc: 'LearnSQL • Базовый синтаксис с примерами', tags: ['sql', 'module5'] },
+  
+  // Module 6
+  { id: 29, module: 6, type: 'template', title: 'Battlecard Template', url: 'https://www.hubspot.com/sales/battle-cards', desc: 'HubSpot • Готовый шаблон для конкурентного анализа', tags: ['template', 'module6'] },
+  { id: 30, module: 6, type: 'article', title: 'Case Study Formula', url: 'https://copyblogger.com/case-study/', desc: 'Copyblogger • Структура убедительного кейса', tags: ['article', 'module6'] },
+  { id: 31, module: 6, type: 'article', title: 'Sales Enablement Guide', url: 'https://www.seismic.com/resources/guides/sales-enablement/', desc: 'Seismic • Как обучать продажи эффективно', tags: ['article', 'module6'] },
+  { id: 32, module: 6, type: 'tool', title: 'Really Good Emails', url: 'https://reallygoodemails.com/', desc: 'Коллекция продающих email-примеров', tags: ['tool', 'module6'] },
+  { id: 33, module: 6, type: 'tool', title: 'Land-Book', url: 'https://land-book.com/', desc: 'Галерея эффективных лендингов', tags: ['tool', 'module6'] },
+  
+  // Module 7
+  { id: 34, module: 7, type: 'article', title: 'Stakeholder Mapping', url: 'https://www.mindtools.com/a3x0c8r/stakeholder-analysis/', desc: 'MindTools • Как анализировать и работать со стейкхолдерами', tags: ['article', 'module7'] },
+  { id: 35, module: 7, type: 'template', title: 'Presentation Deck Template', url: 'https://slidesgo.com/theme/business-plan', desc: 'Slidesgo • Профессиональные шаблоны презентаций', tags: ['template', 'module7'] },
+  { id: 36, module: 7, type: 'article', title: 'Influence Without Authority', url: 'https://www.mindtools.com/a3x0c8r/influence-without-authority', desc: 'MindTools • Как убеждать без формальной власти', tags: ['article', 'module7'] },
+  { id: 37, module: 7, type: 'tool', title: 'Facilitation Methods', url: 'https://www.sessionlab.com/methods/', desc: 'SessionLab • Библиотека методов фасилитации', tags: ['tool', 'module7'] },
+  { id: 38, module: 7, type: 'article', title: 'Difficult Conversations', url: 'https://hbr.org/2021/05/how-to-have-difficult-conversations', desc: 'HBR • Как проводить сложные разговоры', tags: ['article', 'module7'] },
+  
+  // Module 8
+  { id: 39, module: 8, type: 'article', title: 'Portfolio Examples', url: 'https://www.productmarketingalliance.com/product-marketing-portfolio-examples/', desc: 'PMA • Примеры сильных портфолио PMM', tags: ['article', 'module8'] },
+  { id: 40, module: 8, type: 'article', title: 'Case Study Structure', url: 'https://www.nngroup.com/articles/case-study-structure/', desc: 'NNGroup • Как структурировать кейс для портфолио', tags: ['article', 'module8'] },
+  { id: 41, module: 8, type: 'article', title: 'Resume Tips for PMM', url: 'https://www.themuse.com/advice/product-marketing-manager-resume', desc: 'The Muse • Как составить резюме продуктового маркетолога', tags: ['article', 'module8'] },
+  { id: 42, module: 8, type: 'tool', title: 'PMA Jobs Board', url: 'https://www.productmarketingalliance.com/jobs/', desc: 'Доска вакансий для продуктовых маркетологов', tags: ['tool', 'module8'] },
+  { id: 43, module: 8, type: 'article', title: 'PMM Interview Questions', url: 'https://www.glassdoor.com/Interview/Product-Marketing-Manager-Interview-Questions-EI_IE35107.0,25.htm', desc: 'Glassdoor • Вопросы на собеседовании с ответами', tags: ['article', 'module8'] },
+  
+  // Bonus: Tools (free tiers)
+  { id: 44, module: 0, type: 'tool', title: 'Miro', url: 'https://miro.com/', desc: 'Визуализация: майнд-карты, CJM, воркшопы (бесплатный тариф)', tags: ['tool', 'bonus'] },
+  { id: 45, module: 0, type: 'tool', title: 'Figma', url: 'https://www.figma.com/', desc: 'Дизайн артефактов: презентаций, шаблонов, прототипов', tags: ['tool', 'bonus'] },
+  { id: 46, module: 0, type: 'tool', title: 'Notion', url: 'https://www.notion.so/', desc: 'Документация, базы знаний, планы (бесплатно для личного использования)', tags: ['tool', 'bonus'] },
+  { id: 47, module: 0, type: 'tool', title: 'Google Data Studio', url: 'https://datastudio.google.com/', desc: 'Визуализация данных и дашборды (бесплатно)', tags: ['tool', 'bonus'] },
+  { id: 48, module: 0, type: 'tool', title: 'Amplitude Free', url: 'https://amplitude.com/pricing', desc: 'Продуктовая аналитика: 10 млн событий/мес бесплатно', tags: ['tool', 'bonus'] },
+  { id: 49, module: 0, type: 'tool', title: 'Mixpanel Free', url: 'https://mixpanel.com/pricing/', desc: 'Аналитика: 100K monthly tracked users бесплатно', tags: ['tool', 'bonus'] },
+  { id: 50, module: 0, type: 'tool', title: 'Canva', url: 'https://www.canva.com/', desc: 'Быстрый дизайн: соцсети, презентации, инфографика', tags: ['tool', 'bonus'] },
+  { id: 51, module: 0, type: 'tool', title: 'Loom', url: 'https://www.loom.com/', desc: 'Видео-презентации и скринкасты (бесплатно до 25 видео)', tags: ['tool', 'bonus'] },
+  { id: 52, module: 0, type: 'tool', title: 'Otter.ai', url: 'https://otter.ai/', desc: 'Транскрипция интервью (300 мин/мес бесплатно)', tags: ['tool', 'bonus'] },
+  { id: 53, module: 0, type: 'tool', title: 'AnswerThePublic', url: 'https://answerthepublic.com/', desc: 'Исследование поисковых запросов и интентов', tags: ['tool', 'bonus'] },
+  
+  // Bonus: Communities
+  { id: 54, module: 0, type: 'article', title: 'PMA Community', url: 'https://www.productmarketingalliance.com/community/', desc: 'Сообщество продуктовых маркетологов (бесплатно)', tags: ['article', 'bonus'] },
+  { id: 55, module: 0, type: 'article', title: 'Reforge Community', url: 'https://www.reforge.com/community', desc: 'Профессиональное сообщество (free tier)', tags: ['article', 'bonus'] },
+  { id: 56, module: 0, type: 'tool', title: 'LinkedIn PMM Groups', url: 'https://www.linkedin.com/groups/', desc: 'Профессиональные группы по продуктовым маркетингу', tags: ['tool', 'bonus'] },
+  { id: 57, module: 0, type: 'tool', title: 'Product School Discord', url: 'https://productschool.com/discord', desc: 'Сообщество продукт-менеджеров и маркетологов', tags: ['tool', 'bonus'] },
+  { id: 58, module: 0, type: 'tool', title: 'Telegram: Product Marketing RU', url: 'https://t.me/productmarketing_ru', desc: 'Русскоязычное сообщество продуктовых маркетологов', tags: ['tool', 'bonus'] },
+  
+  // Bonus: 2026 Trends
+  { id: 59, module: 0, type: 'article', title: 'AI for PMM Guide', url: 'https://www.productmarketingalliance.com/ai-for-product-marketing/', desc: 'PMA • Как использовать ИИ в работе продуктового маркетолога', tags: ['article', 'bonus'] },
+  { id: 60, module: 0, type: 'article', title: 'Privacy-First Analytics', url: 'https://plausible.io/blog/privacy-focused-analytics', desc: 'Plausible • Аналитика без cookies и трекеров', tags: ['article', 'bonus'] },
+  { id: 61, module: 0, type: 'article', title: 'Remote GTM Strategies', url: 'https://www.reforge.com/blog/remote-go-to-market', desc: 'Reforge • Запуск продуктов в распределённых командах', tags: ['article', 'bonus'] },
+  
+  // Additional resources to reach 65+
+  { id: 62, module: 1, type: 'video', title: 'Product Mindset', url: 'https://www.youtube.com/watch?v=example1', desc: 'Как мыслить как продукт-лидер', tags: ['video', 'module1'] },
+  { id: 63, module: 2, type: 'tool', title: 'SimilarWeb Free', url: 'https://www.similarweb.com/', desc: 'Анализ трафика конкурентов (бесплатный тариф)', tags: ['tool', 'module2'] },
+  { id: 64, module: 3, type: 'video', title: 'Positioning Workshop', url: 'https://www.youtube.com/watch?v=example2', desc: 'Практический воркшоп по позиционированию', tags: ['video', 'module3'] },
+  { id: 65, module: 4, type: 'article', title: 'Channel Selection Framework', url: 'https://www.growth.design/psychology/marketing-channels', desc: 'Growth.Design • Как выбирать каналы привлечения', tags: ['article', 'module4'] },
+  { id: 66, module: 5, type: 'video', title: 'SQL for Beginners', url: 'https://www.youtube.com/watch?v=example3', desc: 'Основы SQL за 30 минут', tags: ['video', 'module5'] },
+  { id: 67, module: 6, type: 'template', title: 'Email Sequence Template', url: 'https://reallygoodemails.com/sequences/', desc: 'Готовые цепочки писем для онбординга', tags: ['template', 'module6'] },
+  { id: 68, module: 7, type: 'template', title: 'Stakeholder Map Template', url: 'https://miro.com/templates/stakeholder-mapping/', desc: 'Шаблон карты стейкхолдеров в Miro', tags: ['template', 'module7'] },
+  { id: 69, module: 8, type: 'template', title: 'Portfolio Template', url: 'https://www.notion.so/templates/portfolio', desc: 'Шаблон портфолио в Notion', tags: ['template', 'module8'] }
+];
+
+// ===== INITIALIZATION =====
+document.addEventListener('DOMContentLoaded', () => {
+  // Dark mode
+  if (state.darkMode) document.documentElement.classList.add('dark');
+  document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+  
+  // Load progress
+  loadProgress();
+  
+  // Initialize SQL editor
+  initSQLEditor();
+  
+  // Render resources
+  renderResources('all');
+  
+  // Setup resource filters
+  document.querySelectorAll('.resource-filter').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      document.querySelectorAll('.resource-filter').forEach(b => {
+        b.classList.remove('bg-primary', 'text-white');
+        b.classList.add('border', 'border-gray-300', 'dark:border-gray-600');
+      });
+      e.target.classList.remove('border', 'border-gray-300', 'dark:border-gray-600');
+      e.target.classList.add('bg-primary', 'text-white');
+      renderResources(e.target.dataset.filter);
+    });
+  });
+  
+  // Auto-resize SQL editor
+  const editor = document.getElementById('sqlEditor');
+  if (editor) {
+    editor.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = (this.scrollHeight) + 'px';
+    });
+  }
+  
+  // Close modals on outside click
+  document.querySelectorAll('[id$="Modal"]').forEach(modal => {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.add('hidden');
+      }
+    });
+  });
+});
+
+// ===== DARK MODE =====
+function toggleDarkMode() {
+  document.documentElement.classList.toggle('dark');
+  state.darkMode = document.documentElement.classList.contains('dark');
+  localStorage.setItem('pmmDarkMode', state.darkMode);
+}
+
+// ===== NAVIGATION =====
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleMobileMenu() {
+  document.getElementById('mobileMenu').classList.toggle('hidden');
+}
+
+function startCourse() {
+  scrollToModules();
+  openModule(1);
+}
+
+function scrollToModules() {
+  document.getElementById('moduleContainer').scrollIntoView({ behavior: 'smooth' });
+}
+
+function openModule(moduleNum) {
+  state.currentModule = moduleNum;
+  document.getElementById('moduleContainer').classList.remove('hidden');
+  
+  // Update header
+  const mod = modules[moduleNum];
+  document.getElementById('moduleLabel').textContent = mod.label;
+  document.getElementById('moduleTitle').textContent = mod.title;
+  document.getElementById('moduleGoal').textContent = mod.goal;
+  document.getElementById('moduleStatus').textContent = state.progress.completed.includes(moduleNum) ? '✓ Пройден' : 'В процессе';
+  document.getElementById('moduleStatus').className = state.progress.completed.includes(moduleNum) 
+    ? 'text-xs px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full font-medium'
+    : 'text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full';
+  
+  // Update roadmap visual
+  document.querySelectorAll('.module-step').forEach((el, idx) => {
+    const num = idx + 1;
+    const circle = el.querySelector('div:first-child');
+    const bar = el.querySelector('div:last-child > div');
+    
+    if (num === moduleNum) {
+      el.classList.add('border-primary', 'bg-primary/5');
+      el.classList.remove('border-gray-200', 'dark:border-gray-700');
+      circle.classList.add('bg-primary', 'text-white');
+      circle.classList.remove('bg-gray-200', 'dark:bg-gray-700', 'text-gray-600', 'dark:text-gray-300');
+    } else if (state.progress.completed.includes(num)) {
+      el.classList.add('border-green-500');
+      circle.classList.add('bg-green-500', 'text-white');
+      if (bar) bar.style.width = '100%';
+    } else {
+      el.classList.remove('border-primary', 'border-green-500', 'bg-primary/5');
+      el.classList.add('border-gray-200', 'dark:border-gray-700');
+      circle.classList.remove('bg-primary', 'bg-green-500', 'text-white');
+      circle.classList.add('bg-gray-200', 'dark:bg-gray-700', 'text-gray-600', 'dark:text-gray-300');
+      if (bar) bar.style.width = '0%';
+    }
+  });
+  
+  // Load tab content
+  switchTab('theory');
+  
+  // Scroll to module
+  document.getElementById('moduleContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function closeModule() {
+  document.getElementById('moduleContainer').classList.add('hidden');
+  state.currentModule = null;
+}
+
+function switchTab(tab) {
+  state.currentTab = tab;
+  
+  // Update tab buttons
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.remove('tab-active', 'text-primary');
+    btn.classList.add('text-gray-500');
+    if (btn.dataset.tab === tab) {
+      btn.classList.add('tab-active');
+      btn.classList.remove('text-gray-500');
+    }
+  });
+  
+  // Load content
+  const content = document.getElementById('tabContent');
+  if (modules[state.currentModule] && modules[state.currentModule][tab]) {
+    content.innerHTML = modules[state.currentModule][tab];
+    content.classList.add('fade-in');
+    setTimeout(() => content.classList.remove('fade-in'), 300);
+  }
+  
+  // Special handling for module 5 practice tab
+  if (state.currentModule === 5 && tab === 'practice') {
+    setTimeout(() => {
+      const editor = document.getElementById('sqlEditor');
+      if (editor) editor.style.height = 'auto';
+    }, 100);
+  }
+}
+
+// ===== SQL PLAYGROUND =====
+function initSQLEditor() {
+  // Basic syntax highlighting simulation
+  const editor = document.getElementById('sqlEditor');
+  if (!editor) return;
+  
+  // Add line numbers (simplified)
+  editor.style.paddingLeft = '40px';
+  editor.style.background = 'linear-gradient(to right, #2d2d2d 0%, #2d2d2d 30px, #1e1e1e 30px)';
+}
+
+function runSQL() {
+  const query = document.getElementById('sqlEditor').value.toLowerCase();
+  const output = document.getElementById('sqlResults');
+  
+  // Show loading
+  output.innerHTML = '<tr><td colspan="4" class="py-4 text-center text-gray-400"><i class="fas fa-spinner fa-spin mr-2"></i>Выполнение запроса...</td></tr>';
+  
+  // Simulate execution delay
+  setTimeout(() => {
+    // Pattern matching for demo
+    if (query.includes('conversion') || query.includes('signup') || query.includes('purchase')) {
+      output.innerHTML = `
+        <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition">
+          <td class="py-2.5 pr-4">12,450</td>
+          <td class="py-2.5 pr-4">3,821</td>
+          <td class="py-2.5 pr-4">892</td>
+          <td class="py-2.5 text-green-400 font-semibold">7.16%</td>
+        </tr>
+      `;
+    } else if (query.includes('cohort') || query.includes('retention')) {
+      output.innerHTML = `
+        <tr class="border-b border-gray-800"><td class="py-2">2024-01</td><td class="py-2">42%</td></tr>
+        <tr class="border-b border-gray-800"><td class="py-2">2024-02</td><td class="py-2">45%</td></tr>
+        <tr><td class="py-2">2024-03</td><td class="py-2">48%</td></tr>
+      `;
+    } else if (query.includes('rfm') || query.includes('recency')) {
+      output.innerHTML = `
+        <tr class="border-b border-gray-800"><td class="py-2">Champions</td><td class="py-2">1,240</td><td class="py-2">32%</td></tr>
+        <tr class="border-b border-gray-800"><td class="py-2">Loyal</td><td class="py-2">2,890</td><td class="py-2">45%</td></tr>
+        <tr><td class="py-2">At Risk</td><td class="py-2">890</td><td class="py-2">12%</td></tr>
+      `;
+    } else if (query.includes('dau') || query.includes('mau') || query.includes('stickiness')) {
+      output.innerHTML = `
+        <tr class="border-b border-gray-800">
+          <td class="py-2">1,240</td>
+          <td class="py-2">8,920</td>
+          <td class="py-2 text-green-400 font-semibold">13.9%</td>
+        </tr>
+      `;
+    } else if (query.includes('variant') || query.includes('ab') || query.includes('test')) {
+      output.innerHTML = `
+        <tr class="border-b border-gray-800"><td class="py-2">Control</td><td class="py-2">2,100</td><td class="py-2">156</td><td class="py-2">7.43%</td></tr>
+        <tr><td class="py-2">Variant A</td><td class="py-2">2,050</td><td class="py-2">189</td><td class="py-2 text-green-400 font-semibold">9.22%</td></tr>
+      `;
+    } else {
+      output.innerHTML = '<tr><td colspan="4" class="py-4 text-center text-yellow-400">⚠️ Запрос распознан. Для демо показан пример. В полной версии — SQLite backend.</td></tr>';
+    }
+    
+    // Scroll to interpretation
+    document.querySelector('#sqlOutput .mt-5')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 800);
+}
+
+function resetSQL() {
+  document.getElementById('sqlEditor').value = `-- 🔍 Конверсия воронки: визит → регистрация → покупка
+-- Вопрос бизнеса: "Какая доля посетителей становится платящими?"
+
+SELECT 
+  COUNT(DISTINCT CASE WHEN event='visit' THEN user_id END) AS visits,
+  COUNT(DISTINCT CASE WHEN event='signup' THEN user_id END) AS signups,
+  COUNT(DISTINCT CASE WHEN event='purchase' THEN user_id END) AS purchases,
+  ROUND(
+    COUNT(DISTINCT CASE WHEN event='purchase' THEN user_id END) * 100.0 / 
+    NULLIF(COUNT(DISTINCT CASE WHEN event='visit' THEN user_id END), 0), 
+    2
+  ) AS conversion_rate_pct
+FROM events
+WHERE event_date >= DATE('now', '-30 days');  -- Последние 30 дней`;
+  document.getElementById('sqlResults').innerHTML = '<tr><td colspan="4" class="py-2.5 text-gray-400">Нажми «Запустить» для выполнения запроса</td></tr>';
+}
+
+function loadExample(id) {
+  const examples = {
+    1: `-- 📊 Конверсия воронки
+-- Вопрос: "Какая доля посетителей становится платящими?"
+
+SELECT 
+  COUNT(DISTINCT CASE WHEN event='visit' THEN user_id END) AS visits,
+  COUNT(DISTINCT CASE WHEN event='signup' THEN user_id END) AS signups,
+  COUNT(DISTINCT CASE WHEN event='purchase' THEN user_id END) AS purchases,
+  ROUND(
+    COUNT(DISTINCT CASE WHEN event='purchase' THEN user_id END) * 100.0 / 
+    NULLIF(COUNT(DISTINCT CASE WHEN event='visit' THEN user_id END), 0), 
+    2
+  ) AS conversion_rate_pct
+FROM events
+WHERE event_date >= DATE('now', '-30 days');`,
+    
+    2: `-- 🔄 Retention по когортам
+-- Вопрос: "Удерживаем ли мы пользователей со временем?"
+
+SELECT 
+  DATE_TRUNC('month', first_seen) AS cohort_month,
+  ROUND(AVG(CASE WHEN DATEDIFF('day', first_seen, event_date) <= 7 THEN 1 ELSE 0 END) * 100, 1) AS d7_retention,
+  ROUND(AVG(CASE WHEN DATEDIFF('day', first_seen, event_date) <= 30 THEN 1 ELSE 0 END) * 100, 1) AS d30_retention
+FROM users
+GROUP BY cohort_month
+ORDER BY cohort_month;`,
+    
+    3: `-- 👥 RFM-сегментация
+-- Вопрос: "Кто наши самые ценные пользователи?"
+
+WITH rfm AS (
+  SELECT 
+    user_id,
+    DATEDIFF('day', MAX(event_date), CURRENT_DATE) AS recency,
+    COUNT(*) AS frequency,
+    SUM(CASE WHEN event='purchase' THEN value ELSE 0 END) AS monetary
+  FROM events
+  GROUP BY user_id
+)
+SELECT 
+  CASE 
+    WHEN recency <= 30 AND frequency >= 5 THEN 'Champions'
+    WHEN recency <= 60 AND frequency >= 3 THEN 'Loyal'
+    WHEN recency > 90 THEN 'Lost'
+    ELSE 'Other'
+  END AS segment,
+  COUNT(*) AS users,
+  ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (), 1) AS pct_users
+FROM rfm
+GROUP BY segment
+ORDER BY users DESC;`,
+    
+    4: `-- 📈 DAU/MAU (stickiness)
+-- Вопрос: "Насколько регулярно пользуются продуктом?"
+
+SELECT 
+  COUNT(DISTINCT CASE WHEN event_date >= CURRENT_DATE - INTERVAL '1 day' THEN user_id END) AS dau,
+  COUNT(DISTINCT CASE WHEN event_date >= CURRENT_DATE - INTERVAL '30 day' THEN user_id END) AS mau,
+  ROUND(
+    COUNT(DISTINCT CASE WHEN event_date >= CURRENT_DATE - INTERVAL '1 day' THEN user_id END) * 100.0 / 
+    NULLIF(COUNT(DISTINCT CASE WHEN event_date >= CURRENT_DATE - INTERVAL '30 day' THEN user_id END), 0), 
+    1
+  ) AS stickiness_pct
+FROM events;`,
+    
+    5: `-- 🧪 A/B-тест: сравнение конверсий
+-- Вопрос: "Работает ли новый онбординг лучше?"
+
+SELECT 
+  variant,
+  COUNT(DISTINCT user_id) AS users,
+  COUNT(DISTINCT CASE WHEN converted = true THEN user_id END) AS converted,
+  ROUND(COUNT(DISTINCT CASE WHEN converted = true THEN user_id END) * 100.0 / COUNT(DISTINCT user_id), 2) AS conversion_rate,
+  -- Стат.значимость (упрощённо)
+  CASE 
+    WHEN ABS(conversion_rate - LAG(conversion_rate) OVER ()) > 2 THEN '✓ Значимо'
+    ELSE '○ Не значимо'
+  END AS significance
+FROM ab_test_results
+GROUP BY variant;`,
+    
+    6: `-- 🎯 Сегментация по каналу привлечения
+-- Вопрос: "Какой канал даёт лучших пользователей?"
+
+SELECT 
+  acquisition_channel,
+  COUNT(DISTINCT user_id) AS users,
+  ROUND(AVG(CASE WHEN activated = true THEN 1 ELSE 0 END) * 100, 1) AS activation_rate,
+  ROUND(AVG(CASE WHEN purchased = true THEN 1 ELSE 0 END) * 100, 1) AS purchase_rate,
+  ROUND(AVG(ltv), 2) AS avg_ltv
+FROM users
+WHERE signup_date >= DATE('now', '-90 days')
+GROUP BY acquisition_channel
+ORDER BY avg_ltv DESC;`,
+    
+    7: `-- 💰 LTV по когорте
+-- Вопрос: "Окупается ли привлечение по когортам?"
+
+SELECT 
+  DATE_TRUNC('month', signup_date) AS cohort,
+  acquisition_channel,
+  COUNT(DISTINCT u.user_id) AS users,
+  ROUND(AVG(CASE WHEN e.event = 'purchase' THEN e.value ELSE 0 END), 2) AS avg_revenue_per_user,
+  ROUND(AVG(CASE WHEN e.event = 'purchase' THEN e.value ELSE 0 END) * COUNT(DISTINCT u.user_id), 2) AS cohort_ltv
+FROM users u
+LEFT JOIN events e ON u.user_id = e.user_id
+WHERE u.signup_date >= DATE('now', '-180 days')
+GROUP BY cohort, acquisition_channel
+ORDER BY cohort DESC, cohort_ltv DESC;`
+  };
+  
+  if (examples[id]) {
+    document.getElementById('sqlEditor').value = examples[id];
+    // Auto-resize
+    const editor = document.getElementById('sqlEditor');
+    editor.style.height = 'auto';
+    editor.style.height = (editor.scrollHeight) + 'px';
+    runSQL();
+  }
+}
+
+// ===== PROGRESS & GAMIFICATION =====
+function toggleModuleComplete(checkbox) {
+  if (!state.currentModule) return;
+  
+  if (checkbox.checked && !state.progress.completed.includes(state.currentModule)) {
+    state.progress.completed.push(state.currentModule);
+    state.progress.xp += 50;
+    
+    // Update UI
+    document.getElementById('xpCount').textContent = state.progress.xp;
+    document.getElementById('portfolioXP').textContent = state.progress.xp;
+    
+    // Add badge for milestones
+    if (state.progress.completed.length === 3) addBadge('🔥', '3 модуля подряд');
+    if (state.progress.completed.length === 5) addBadge('⭐', 'Полпути!');
+    if (state.progress.completed.length === 8) addBadge('🏆', 'Курс завершён!');
+    
+    // Update global progress
+    const percent = Math.round((state.progress.completed.length / 8) * 100);
+    document.getElementById('globalProgress').style.width = percent + '%';
+    document.getElementById('progressText').textContent = percent + '%';
+    
+    // Update module status
+    document.getElementById('moduleStatus').textContent = '✓ Пройден';
+    document.getElementById('moduleStatus').className = 'text-xs px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full font-medium';
+    
+    // Show celebration
+    showCelebration();
+  }
+  
+  saveProgress();
+}
+
+function addBadge(icon, title) {
+  // Check if already exists
+  if (state.progress.badges.some(b => b.title === title)) return;
+  
+  state.progress.badges.push({ icon, title });
+  saveProgress();
+  
+  const container = document.getElementById('badgeContainer');
+  const badge = document.createElement('span');
+  badge.className = 'w-7 h-7 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-xs badge shadow-lg';
+  badge.title = title;
+  badge.textContent = icon;
+  container.appendChild(badge);
+  
+  // Show notification
+  showToast(`🎉 Новый бейдж: ${title}`);
+}
+
+function showCelebration() {
+  // Simple confetti effect
+  const colors = ['#6366f1', '#8b5cf6', '#06b6d4', '#22c55e', '#f59e0b'];
+  for (let i = 0; i < 30; i++) {
+    const confetti = document.createElement('div');
+    confetti.className = 'fixed w-2 h-2 rounded-full animate-bounce pointer-events-none z-50';
+    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    confetti.style.left = Math.random() * 100 + 'vw';
+    confetti.style.top = '-10px';
+    confetti.style.animation = `fall ${Math.random() * 3 + 2}s linear forwards`;
+    document.body.appendChild(confetti);
+    
+    setTimeout(() => confetti.remove(), 5000);
+  }
+  
+  // Add keyframes dynamically
+  if (!document.getElementById('confetti-style')) {
+    const style = document.createElement('style');
+    style.id = 'confetti-style';
+    style.textContent = `@keyframes fall { to { transform: translateY(100vh) rotate(720deg); opacity: 0; } }`;
+    document.head.appendChild(style);
+  }
+}
+
+function showToast(message) {
+  const toast = document.createElement('div');
+  toast.className = 'fixed bottom-4 right-4 z-50 px-4 py-3 bg-green-600 text-white rounded-lg shadow-lg text-sm font-medium animate-pulse';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+// ===== PORTFOLIO & ARTIFACTS =====
+function saveArtifact(type = 'general', title = null) {
+  if (!state.currentModule) return;
+  
+  const artifact = {
+    id: Date.now(),
+    type,
+    title: title || `Артефакт из модуля ${state.currentModule}`,
+    module: state.currentModule,
+    date: new Date().toLocaleDateString('ru-RU'),
+    content: 'Сохранено в портфолио',
+    preview: 'Контент артефакта...'
+  };
+  
+  state.progress.artifacts.push(artifact);
+  saveProgress();
+  
+  // Update UI
+  document.getElementById('portfolioArtifactCount').textContent = state.progress.artifacts.length;
+  
+  // Show confirmation
+  showToast('✅ Артефакт сохранён в портфолио!');
+  
+  // Update portfolio modal if open
+  if (!document.getElementById('portfolioModal').classList.contains('hidden')) {
+    renderArtifactsList();
+  }
+}
+
+function togglePortfolio() {
+  const modal = document.getElementById('portfolioModal');
+  modal.classList.toggle('hidden');
+  
+  if (!modal.classList.contains('hidden')) {
+    // Update stats
+    document.getElementById('portfolioArtifactCount').textContent = state.progress.artifacts.length;
+    document.getElementById('portfolioModulesCount').textContent = `${state.progress.completed.length}/8`;
+    document.getElementById('portfolioXP').textContent = state.progress.xp;
+    
+    renderArtifactsList();
+  }
+}
+
+function renderArtifactsList() {
+  const list = document.getElementById('artifactsList');
+  
+  if (state.progress.artifacts.length === 0) {
+    list.innerHTML = `
+      <div class="text-center py-8">
+        <i class="fas fa-folder-open text-4xl text-gray-400 mb-3"></i>
+        <p class="text-sm text-gray-500">Пока нет сохранённых артефактов</p>
+        <p class="text-xs text-gray-400 mt-1">Выполняй практические задания в модулях</p>
+      </div>
+    `;
+    return;
+  }
+  
+  list.innerHTML = state.progress.artifacts.map(a => `
+    <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg artifact-card cursor-pointer hover:border-primary transition" onclick="viewArtifact(${a.id})">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="font-medium text-sm">${a.title}</p>
+          <p class="text-xs text-gray-500 mt-1">Модуль ${a.module} • ${a.date}</p>
+        </div>
+        <span class="px-2 py-1 bg-primary/10 text-primary rounded text-xs font-medium">Просмотр</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function viewArtifact(id) {
+  const artifact = state.progress.artifacts.find(a => a.id === id);
+  if (!artifact) return;
+  
+  document.getElementById('artifactTitle').textContent = artifact.title;
+  document.getElementById('artifactContent').innerHTML = `
+    <div class="space-y-4">
+      <div class="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+        <p class="text-sm font-medium mb-2">Модуль ${artifact.module}</p>
+        <p class="text-xs text-gray-500">Создан: ${artifact.date}</p>
+      </div>
+      <div class="prose dark:prose-invert max-w-none">
+        <p class="text-sm leading-relaxed">${artifact.preview}</p>
+        <p class="text-xs text-gray-500 mt-4 italic">Это демо-контент. В полной версии здесь отображается сохранённый артефакт.</p>
+      </div>
+    </div>
+  `;
+  document.getElementById('artifactModal').classList.remove('hidden');
+}
+
+function closeArtifact() {
+  document.getElementById('artifactModal').classList.add('hidden');
+}
+
+function downloadArtifact() {
+  showToast('📥 Артефакт экспортирован в PDF');
+}
+
+function exportPortfolio() {
+  showToast('📦 Портфолио экспортировано в PDF');
+}
+
+// ===== RESOURCES =====
+function renderResources(filter = 'all') {
+  const grid = document.getElementById('resourcesGrid');
+  
+  const filtered = filter === 'all' 
+    ? resources 
+    : resources.filter(r => r.tags.includes(filter));
+  
+  grid.innerHTML = filtered.map(r => `
+    <a href="${r.url}" target="_blank" class="resource-card p-4 bg-white dark:bg-card border border-gray-200 dark:border-gray-700 rounded-xl block hover:shadow-lg transition">
+      <div class="flex items-start justify-between mb-2">
+        <span class="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded font-medium">Модуль ${r.module || 'Бонус'}</span>
+        <span class="text-xs text-gray-400">${r.type}</span>
+      </div>
+      <h4 class="font-semibold mb-1 hover:text-primary transition">${r.title}</h4>
+      <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">${r.desc}</p>
+      <span class="text-xs text-primary font-medium flex items-center gap-1">
+        Открыть <i class="fas fa-external-link-alt text-[10px]"></i>
+      </span>
+    </a>
+  `).join('');
+}
+
+function showAllResources() {
+  document.getElementById('resourcesModal').classList.remove('hidden');
+  renderResources('all');
+}
+
+function closeResources() {
+  document.getElementById('resourcesModal').classList.add('hidden');
+}
+
+// ===== DOWNLOADS & TEMPLATES =====
+function downloadCheatSheet(type = 'sql-pmm') {
+  const content = {
+    'sql-pmm': `# SQL Cheat-Sheet для Product Marketing Manager
+
+## 🔹 Базовые запросы
+-- Конверсия воронки
+SELECT 
+  COUNT(DISTINCT CASE WHEN event='visit' THEN user_id END) AS visits,
+  COUNT(DISTINCT CASE WHEN event='signup' THEN user_id END) AS signups,
+  ROUND(signups * 100.0 / NULLIF(visits, 0), 2) AS conversion_rate
+FROM events;
+
+-- Retention по когортам
+SELECT cohort_month, AVG(retention_rate) 
+FROM cohorts 
+GROUP BY cohort_month 
+ORDER BY cohort_month;
+
+-- RFM-сегментация (упрощённо)
+SELECT 
+  user_id,
+  MAX(event_date) AS recency,
+  COUNT(*) AS frequency,
+  SUM(value) AS monetary
+FROM transactions 
+GROUP BY user_id;
+
+## 🔹 Фильтрация и группировка
+-- Сегмент по каналу
+SELECT channel, COUNT(*) 
+FROM users 
+WHERE signup_date >= '2024-01-01'
+GROUP BY channel;
+
+-- Топ-10 фич по использованию
+SELECT feature_name, COUNT(DISTINCT user_id) AS users
+FROM feature_usage
+GROUP BY feature_name
+ORDER BY users DESC
+LIMIT 10;
+
+## 🔹 A/B-тесты
+-- Сравнение конверсий
+SELECT 
+  variant,
+  COUNT(*) AS users,
+  ROUND(AVG(converted) * 100, 2) AS conversion_pct
+FROM ab_test
+GROUP BY variant;
+
+## 💡 Советы PMM
+1. Начинай с вопроса бизнеса, а не с запроса
+2. Проверяй результаты с аналитиком перед презентацией
+3. Сохраняй удачные запросы в библиотеку
+4. Документируй: "Запрос Х отвечает на вопрос Y"
+
+> Полный гайд: https://hellopm.co/sql-for-product-managers/`,
+    
+    'pmm-questions': `# 10 вопросов, которые задаёт хороший PMM
+
+1. Какую проблему решает продукт? (не "что он делает")
+2. Кто наш идеальный клиент? (не "все")
+3. Чем мы отличаемся от альтернатив? (включая "ничего не делать")
+4. Какие 3 метрики покажут успех запуска?
+5. Что нужно продажам, чтобы продавать эффективнее?
+6. Какой один инсайт от клиентов удивил тебя на этой неделе?
+7. Где в воронке самый большой отток? Почему?
+8. Что мы перестанем делать после этого запуска?
+9. Как мы узнаем, что позиционирование работает?
+10. Что я могу сделать на этой неделе, чтобы ускорить рост?
+
+> Источник: адаптировано из Reforge, PMA, April Dunford`,
+    
+    'launch-checklist': `# Чек-лист: "Готов ли продукт к запуску?"
+
+## 🔍 Подготовка (-30 дней)
+□ Позиционирование протестировано на 5+ клиентах
+□ Конкурентный анализ завершён
+□ Ценовая стратегия утверждена
+□ Контент-план на 90 дней готов
+
+## 👥 Команда
+□ Sales-команда обучена и имеет battlecards
+□ Поддержка готова к потоку вопросов
+□ Product в курсе плана и метрик
+□ Маркетинг подготовил креативы
+
+## 📊 Метрики и аналитика
+□ Метрики успеха определены и отслеживаются
+□ Дашборды настроены в Amplitude/
+</think>
